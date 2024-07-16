@@ -65,7 +65,7 @@ export default function App() {
             <CustomButton
               title="Continue with Phone number"
               handlePress={() => {
-                router.replace("login");
+                router.replace("bills");
               }}
             />
           </View>

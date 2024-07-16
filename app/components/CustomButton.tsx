@@ -21,7 +21,7 @@ const CustomButton: React.FC<CustomButtonProps> = ({
       onPress={handlePress}
       activeOpacity={0.7}
       disabled={isLoading}
-      className={`bg-secondary rounded-xl min-h-[50px] w-full justify-center items-center ${conntainerStyles}`}
+      className={`bg-secondary rounded-xl min-h-[20px] w-full justify-center items-center ${conntainerStyles}`}
     >
       <Text className={`text-white ${textStyles}`}>{title}</Text>
     </TouchableOpacity>

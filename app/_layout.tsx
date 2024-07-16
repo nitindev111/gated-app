@@ -39,6 +39,8 @@ export default function RootLayout() {
     <PaperProvider theme={theme}>
       <Stack>
         <Stack.Screen name="index" />
+        <Stack.Screen name="home" />
+        <Stack.Screen name="mark-paid" />
       </Stack>
     </PaperProvider>
   );
