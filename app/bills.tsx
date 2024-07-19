@@ -31,8 +31,12 @@ const Bills = () => {
   useEffect(() => {
     const fetchBills = async () => {
       try {
-        const response = await axios.get(
-          "http://192.168.1.9:3000/bills/fetchAll"
+        const response = await axios.post(
+          "http://192.168.1.9:3000/bills/fetchAll",
+          {
+            filters: { verification_status: "unverified" },
+            sortCriteria: { verification_status: -1 },
+          }
         );
         setBills(response.data);
       } catch (error) {
@@ -113,6 +117,10 @@ const Bills = () => {
               title="Mark as Paid"
               conntainerStyles={"h-[30px] w-full mt-2 text-s"}
               textStyles={"text-s"}
+              isDisabled={
+                bill.verification_status === "pending" ||
+                bill.verification_status === "verified"
+              }
             />
           </View>
         ))}
