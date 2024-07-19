@@ -14,14 +14,16 @@ const PaidAmountDetails = () => {
   const [transactionId, setTransactionId] = useState("");
   const [description, setDescription] = useState("");
   const [bill, setBill] = useState({});
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchBill = async () => {
+      const url =
+        process.env.EXPO_PUBLIC_BACKEND_BASE_URL +
+        `/bills/fetch?id=${router?.bill_id}`;
+
       try {
-        const response = await axios.get(
-          `http://192.168.1.9:3000/bills/fetch?id=${router?.bill_id}`
-        );
+        const response = await axios.get(url);
         setBill(response.data);
       } catch (error) {
         console.error("Error fetching bill:", error);
@@ -44,8 +46,9 @@ const PaidAmountDetails = () => {
     }
 
     try {
+      setLoading(true);
       const response = await axios.post(
-        "http://192.168.1.9:3000/bills/mark-paid",
+        "http://192.168.1.2:3000/api/bills/mark-paid",
         {
           bill_ids: [router?.bill_id],
           payment_proof: data,
@@ -69,6 +72,8 @@ const PaidAmountDetails = () => {
     } catch (error) {
       console.error("Error submitting payment proof:", error);
       Alert.alert("Error", "Failed to mark payment as paid");
+    } finally {
+      setLoading(false);
     }
   };
 

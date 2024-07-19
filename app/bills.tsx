@@ -30,14 +30,16 @@ const Bills = () => {
 
   useEffect(() => {
     const fetchBills = async () => {
+      setLoading(true);
+      const url = process.env.EXPO_PUBLIC_BACKEND_BASE_URL + `/bills/fetchAll`;
+      console.log("====================================");
+      console.log("url", url);
+      console.log("====================================");
       try {
-        const response = await axios.post(
-          "http://192.168.1.9:3000/bills/fetchAll",
-          {
-            filters: { verification_status: "unverified" },
-            sortCriteria: { verification_status: -1 },
-          }
-        );
+        const response = await axios.post(url, {
+          filters: {},
+          sortCriteria: { verification_status: -1 },
+        });
         setBills(response.data);
       } catch (error) {
         console.error("Error fetching bills:", error);
@@ -79,18 +81,18 @@ const Bills = () => {
                 />
               )}
 
-              <Text className="text-lg text-black-600 mb-1 capitalize">
+              <Text className="text-md font-bold  mb-1 capitalize">
                 {bill?.bill_category}{" "}
                 {format(new Date(bill?.generated_at), "LLLL yyyy")}
               </Text>
             </View>
 
-            <View className="flex flex-row gap-2">
+            <View className="flex flex-row gap-2 items-center">
               <Text
-                className={`text-m ${
+                className={`text-xs ${
                   bill.verification_status === "verified"
-                    ? "text-green-600"
-                    : "text-red-600"
+                    ? "text-green-600 "
+                    : "text-red-600 bg-red-200 rounded-md p-1"
                 } uppercase`}
               >
                 {bill?.verification_status}
@@ -104,8 +106,8 @@ const Bills = () => {
             <Text className="text-m text-gray-600 mb-1">
               Amount: {bill?.amount}
             </Text>
-            <Text className="text-lg text-gray-600">
-              Due Date: {format(new Date(bill?.due_date), "PPP")}
+            <Text className="text-sm text-gray-600">
+              Due Date {format(new Date(bill?.due_date), "dd MMM yyyy")}
             </Text>
             <CustomButton
               handlePress={() => {
