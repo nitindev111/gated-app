@@ -6,14 +6,17 @@ import {
   ActivityIndicator,
   Button,
 } from "react-native";
-import axios from "axios";
 import { format, getMonth } from "date-fns";
 import CheckBox from "expo-checkbox";
 import CustomButton from "./components/CustomButton";
 import { router } from "expo-router";
+import { RUPEE_SYMBOL, VERIFICATION_STATUS } from "@/constants/others";
+import axiosInstance from "./utils/axiosInstance";
+import { BACKEND_BASE_URL } from "@/config/config";
 
 const Bills = () => {
   const [bills, setBills] = useState([]);
+  const [totalDue, setTotalDue] = useState(0);
   const [loading, setLoading] = useState(true);
   const [selectedBills, setSelectedBills] = useState([]);
   const [showCheckBoxes, setShowCheckBoxes] = useState(false);
@@ -28,6 +31,19 @@ const Bills = () => {
     });
   };
 
+  const fetchTotalDue = async () => {
+    setLoading(true);
+    const url = BACKEND_BASE_URL + `/bills/total-due`;
+    try {
+      const response = await axiosInstance.get(url);
+      setTotalDue(response.data?.totalDue);
+    } catch (error) {
+      console.error("Error fetching total due:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     const fetchBills = async () => {
       setLoading(true);
@@ -36,7 +52,7 @@ const Bills = () => {
       console.log("url", url);
       console.log("====================================");
       try {
-        const response = await axios.post(url, {
+        const response = await axiosInstance.post(url, {
           filters: {},
           sortCriteria: { verification_status: -1 },
         });
@@ -49,6 +65,7 @@ const Bills = () => {
     };
 
     fetchBills();
+    fetchTotalDue();
   }, []);
 
   if (loading) {
@@ -61,12 +78,14 @@ const Bills = () => {
 
   return (
     <View className="flex-1">
-      <View className="flex m-4 items-center border-solid border-2">
+      <View className="flex m-4 p-2 items-center bg-slate-200">
         <Text className="text-m">Total Due</Text>
-        <Text className="text-red-500 text-m">Rs. 1200</Text>
+        <Text className="text-red-500 text-m">
+          {RUPEE_SYMBOL} {totalDue}
+        </Text>
       </View>
-      <ScrollView className="flex-1 p-4">
-        {bills.map((bill: any) => (
+      <ScrollView className="flex-1 p-4 pt-2">
+        {bills?.map((bill: any) => (
           <View
             key={bill._id}
             className="bg-white p-4 mb-4 rounded-lg shadow-md"
@@ -104,7 +123,7 @@ const Bills = () => {
             </View>
 
             <Text className="text-m text-gray-600 mb-1">
-              Amount: {bill?.amount}
+              Amount: {RUPEE_SYMBOL + bill?.amount}
             </Text>
             <Text className="text-sm text-gray-600">
               Due Date {format(new Date(bill?.due_date), "dd MMM yyyy")}
@@ -120,8 +139,8 @@ const Bills = () => {
               conntainerStyles={"h-[30px] w-full mt-2 text-s"}
               textStyles={"text-s"}
               isDisabled={
-                bill.verification_status === "pending" ||
-                bill.verification_status === "verified"
+                bill.verfication_status === VERIFICATION_STATUS.VERIFIED ||
+                bill.verfication_status === VERIFICATION_STATUS.PENDING
               }
             />
           </View>

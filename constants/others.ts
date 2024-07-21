@@ -1,0 +1,8 @@
+export const RUPEE_SYMBOL = "₹";
+
+export enum VERIFICATION_STATUS {
+  PENDING = "PENDING",
+  VERIFIED = "VERIFIED",
+  UNVERIFIED = "UNVERIFIED",
+  REJECTED = "REJECTED",
+}

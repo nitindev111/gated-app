@@ -3,7 +3,7 @@ import { View, Text, TextInput, Button, ScrollView, Alert } from "react-native";
 import CheckBox from "expo-checkbox";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import axios from "axios";
+import axiosInstance from "@/app/utils/axiosInstance";
 
 const PaidAmountDetails = () => {
   const router = useLocalSearchParams();
@@ -23,7 +23,7 @@ const PaidAmountDetails = () => {
         `/bills/fetch?id=${router?.bill_id}`;
 
       try {
-        const response = await axios.get(url);
+        const response = await axiosInstance.get(url);
         setBill(response.data);
       } catch (error) {
         console.error("Error fetching bill:", error);
@@ -47,7 +47,7 @@ const PaidAmountDetails = () => {
 
     try {
       setLoading(true);
-      const response = await axios.post(
+      const response = await axiosInstance.post(
         "http://192.168.1.2:3000/api/bills/mark-paid",
         {
           bill_ids: [router?.bill_id],

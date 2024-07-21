@@ -1,11 +1,42 @@
 import React from "react";
 import { View, Text, TouchableOpacity } from "react-native";
-import { styled } from "nativewind";
 import { useRouter } from "expo-router";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const HOME_SECTIONS = [
   {
     name: "My bills",
+    path: "bills",
+    icon: "eye",
+  },
+  {
+    name: "Members",
+    path: "members",
+    icon: "play",
+  },
+  {
+    name: "Downloads",
+    label: "Downloads",
+    path: "downloads",
+    icon: "profile",
+  },
+  {
+    name: "Visitors",
+    label: "Visitors",
+    path: "visitors",
+    icon: "bookmark",
+  },
+  {
+    name: "Logout",
+    label: "Logout",
+    path: "/logout",
+    icon: "bookmark",
+  },
+];
+
+const HOME_SECTIONS_ADMIN = [
+  {
+    name: "Approve Bills",
     path: "bills",
     icon: "eye",
   },
@@ -40,11 +71,17 @@ const SectionCard: React.FC<any> = ({ name, onPress }) => (
 const Home = () => {
   const router = useRouter();
 
-  const handleSectionClick = (path: string) => {
-    router.push(path);
+  const handleSectionClick = async (path: string) => {
+    if (path.includes("logout")) {
+      await AsyncStorage.clear();
+      router.replace("/");
+    } else {
+      router.push(path);
+    }
   };
 
   const renderSectionCards = () => {
+    const sections = HOME_SECTIONS;
     const rows = [];
     for (let i = 0; i < HOME_SECTIONS.length; i += 2) {
       const rowItems = HOME_SECTIONS.slice(i, i + 2).map((section, index) => (

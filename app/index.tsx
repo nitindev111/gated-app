@@ -1,35 +1,10 @@
-// import React from "react";
-// import { NavigationContainer } from "@react-navigation/native";
-// import { createStackNavigator } from "@react-navigation/stack";
-// import Login from "./screens/Login";
-// import OTPVerification from "./screens/OTPVerification";
-// import Search from "./screens/Search";
+if (__DEV__) {
+  require("../ReactotronConfig");
+}
 
-// type RootStackParamList = {
-//   Login: undefined;
-//   OTPVerification: { generatedOtp: number };
-//   Search: undefined;
-// };
-
-// const Stack = createStackNavigator<RootStackParamList>();
-
-// const App: React.FC = () => {
-//   return (
-//     <NavigationContainer independent>
-//       <Stack.Navigator initialRouteName="Login">
-//         <Stack.Screen name="Login" component={Login} />
-//         <Stack.Screen name="OTPVerification" component={OTPVerification} />
-//         <Stack.Screen name="Search" component={Search} />
-//       </Stack.Navigator>
-//     </NavigationContainer>
-//   );
-// };
-
-// export default App;
-
-import { Link, router } from "expo-router";
+import { Link, router, useFocusEffect } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { Alert, Image, Text, View } from "react-native";
+import { Alert, BackHandler, Image, Text, View } from "react-native";
 import {
   GestureHandlerRootView,
   ScrollView,
@@ -38,9 +13,36 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import images from "@/constants/images";
 import CustomButton from "./components/CustomButton";
 import { useTheme } from "react-native-paper";
+import useAuthRedirect from "./hooks/useAuthRedirect";
+import { useCallback } from "react";
+
+// AsyncStorage.clear();
 
 export default function App() {
   const theme = useTheme();
+  useAuthRedirect();
+
+  useFocusEffect(
+    useCallback(() => {
+      const onBackPress = () => {
+        Alert.alert("Hold on!", "Are you sure you want to go back?", [
+          {
+            text: "Cancel",
+            onPress: () => null,
+            style: "cancel",
+          },
+          { text: "YES", onPress: () => BackHandler.exitApp() },
+        ]);
+        return true;
+      };
+
+      BackHandler.addEventListener("hardwareBackPress", onBackPress);
+
+      return () =>
+        BackHandler.removeEventListener("hardwareBackPress", onBackPress);
+    }, [])
+  );
+
   return (
     <SafeAreaView className="bg-primary h-full">
       <GestureHandlerRootView>
@@ -65,8 +67,9 @@ export default function App() {
             <CustomButton
               title="Continue with Phone number"
               handlePress={() => {
-                router.replace("bills");
+                router.replace("login");
               }}
+              isDisabled={false}
             />
           </View>
         </ScrollView>
@@ -74,10 +77,4 @@ export default function App() {
       </GestureHandlerRootView>
     </SafeAreaView>
   );
-  {
-    /* <View className="flex-1 items-center justify-center">
-        <Text className="text-3xl">this is test</Text>
-        <Link href={"/home"}>Go to home</Link>
-      </View> */
-  }
 }
