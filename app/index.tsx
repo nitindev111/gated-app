@@ -1,24 +1,23 @@
-if (__DEV__) {
-  require("../ReactotronConfig");
-}
-
-import { Link, router, useFocusEffect } from "expo-router";
-import { StatusBar } from "expo-status-bar";
+import React, { useCallback } from "react";
 import { Alert, BackHandler, Image, Text, View } from "react-native";
 import {
   GestureHandlerRootView,
   ScrollView,
 } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { StatusBar } from "expo-status-bar";
+import { useFocusEffect, router } from "expo-router";
+import { useTheme } from "react-native-paper";
 import images from "@/constants/images";
 import CustomButton from "./components/CustomButton";
-import { useTheme } from "react-native-paper";
 import useAuthRedirect from "./hooks/useAuthRedirect";
-import { useCallback } from "react";
+import { UserProvider } from "./context/UserProvider";
 
-// AsyncStorage.clear();
+if (__DEV__) {
+  require("../ReactotronConfig");
+}
 
-export default function App() {
+const AppContent = () => {
   const theme = useTheme();
   useAuthRedirect();
 
@@ -46,11 +45,7 @@ export default function App() {
   return (
     <SafeAreaView className="bg-primary h-full">
       <GestureHandlerRootView>
-        <ScrollView
-          contentContainerStyle={{
-            height: "100%",
-          }}
-        >
+        <ScrollView contentContainerStyle={{ height: "100%" }}>
           <View className="w-full items-center justify-center h-full px-4">
             <Image
               source={images.logo}
@@ -77,4 +72,12 @@ export default function App() {
       </GestureHandlerRootView>
     </SafeAreaView>
   );
-}
+};
+
+const App = () => (
+  <UserProvider>
+    <AppContent />
+  </UserProvider>
+);
+
+export default App;

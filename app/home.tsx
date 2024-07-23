@@ -1,7 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import AsyncStorage, {
+  useAsyncStorage,
+} from "@react-native-async-storage/async-storage";
+import { useUser } from "./context/UserProvider";
 
 const HOME_SECTIONS = [
   {
@@ -36,8 +39,18 @@ const HOME_SECTIONS = [
 
 const HOME_SECTIONS_ADMIN = [
   {
-    name: "Approve Bills",
+    name: "Accounting",
+    path: "accounts",
+    icon: "eye",
+  },
+  {
+    name: "My bills",
     path: "bills",
+    icon: "eye",
+  },
+  {
+    name: "Approve Bills",
+    path: "approveBills",
     icon: "eye",
   },
   {
@@ -57,6 +70,12 @@ const HOME_SECTIONS_ADMIN = [
     path: "visitors",
     icon: "bookmark",
   },
+  {
+    name: "Logout",
+    label: "Logout",
+    path: "/logout",
+    icon: "bookmark",
+  },
 ];
 
 const SectionCard: React.FC<any> = ({ name, onPress }) => (
@@ -70,27 +89,35 @@ const SectionCard: React.FC<any> = ({ name, onPress }) => (
 
 const Home = () => {
   const router = useRouter();
+  const { user, clearUser } = useUser();
+  console.log("user in home", user);
 
   const handleSectionClick = async (path: string) => {
     if (path.includes("logout")) {
-      await AsyncStorage.clear();
-      router.replace("/");
+      await AsyncStorage.removeItem("gated_user", () => {
+        clearUser();
+        router.replace("/");
+      });
     } else {
       router.push(path);
     }
   };
 
   const renderSectionCards = () => {
-    const sections = HOME_SECTIONS;
+    const sections =
+      user?.role === "ADMIN" ? HOME_SECTIONS_ADMIN : HOME_SECTIONS;
+
     const rows = [];
-    for (let i = 0; i < HOME_SECTIONS.length; i += 2) {
-      const rowItems = HOME_SECTIONS.slice(i, i + 2).map((section, index) => (
-        <SectionCard
-          key={index}
-          name={section.name}
-          onPress={() => handleSectionClick(section.path)}
-        />
-      ));
+    for (let i = 0; i < sections.length; i += 2) {
+      const rowItems = sections
+        .slice(i, i + 2)
+        .map((section, index) => (
+          <SectionCard
+            key={index}
+            name={section.name}
+            onPress={() => handleSectionClick(section.path)}
+          />
+        ));
       rows.push(
         <View key={i} className="flex-row">
           {rowItems}

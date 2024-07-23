@@ -23,18 +23,12 @@ const Login = () => {
         BACKEND_BASE_URL +
           `/users/validate-phoneNumber?phoneNumber=${phoneNumber}`
       );
-      console.log("====================================");
-      console.log("response fro mis phonenubmer valid", response.data);
-      console.log("====================================");
       if (response.data) {
         return true;
       } else {
         return false;
       }
     } catch (error) {
-      console.log("====================================");
-      console.log("consoleerr", error);
-      console.log("====================================");
       setErrors({
         apiError: ["PHone number is not valid"],
         validationError: [],
@@ -56,9 +50,6 @@ const Login = () => {
           params: { phoneNumber, orderId: response.data?.orderId },
         }); // Remove the braces in params
       } catch (error) {
-        console.log("====================================");
-        console.log("error", error);
-        console.log("====================================");
         Alert.alert("Something went wrong");
       }
     } else {

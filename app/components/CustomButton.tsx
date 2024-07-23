@@ -1,17 +1,18 @@
 import { View, Text, TouchableOpacity } from "react-native";
 import React from "react";
+import { StyleSheetRuntime } from "nativewind/dist/style-sheet";
 
 interface CustomButtonProps {
   title: string;
   handlePress: () => void;
-  conntainerStyles?: any;
+  conntainerStyles?: string;
   textStyles?: any;
   isLoading?: boolean;
-  isDisabled: boolean;
+  isDisabled?: boolean;
 }
 
 const CustomButton: React.FC<CustomButtonProps> = ({
-  title = "Click Me",
+  title,
   handlePress,
   conntainerStyles = "",
   textStyles = "",
@@ -25,12 +26,12 @@ const CustomButton: React.FC<CustomButtonProps> = ({
       disabled={isLoading || isDisabled}
       className={`${
         isDisabled ? "bg-gray-200" : "bg-secondary"
-      } rounded-xl min-h-[20px] w-full justify-center items-center ${conntainerStyles}`}
+      } rounded-xl min-h-[20px] w-full justify-center items-center sticky bottom-0  ${conntainerStyles}`}
     >
       <Text
         className={`${isDisabled ? "text-black" : "text-white"} ${textStyles}`}
       >
-        {isDisabled ? "Pending" : title}
+        {title}
       </Text>
     </TouchableOpacity>
   );

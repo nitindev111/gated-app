@@ -17,7 +17,6 @@ const Login = () => {
       identifier: "919028234693",
     };
     const response = await OTPWidget.sendOTP(data);
-    console.log(response);
   };
 
   return (

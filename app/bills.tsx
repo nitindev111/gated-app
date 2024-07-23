@@ -48,9 +48,6 @@ const Bills = () => {
     const fetchBills = async () => {
       setLoading(true);
       const url = process.env.EXPO_PUBLIC_BACKEND_BASE_URL + `/bills/fetchAll`;
-      console.log("====================================");
-      console.log("url", url);
-      console.log("====================================");
       try {
         const response = await axiosInstance.post(url, {
           filters: {},
@@ -109,8 +106,8 @@ const Bills = () => {
             <View className="flex flex-row gap-2 items-center">
               <Text
                 className={`text-xs ${
-                  bill.verification_status === "verified"
-                    ? "text-green-600 "
+                  bill.verification_status === "APPROVED"
+                    ? "text-green-600  bg-green-200 rounded-md p-1"
                     : "text-red-600 bg-red-200 rounded-md p-1"
                 } uppercase`}
               >
@@ -128,21 +125,43 @@ const Bills = () => {
             <Text className="text-sm text-gray-600">
               Due Date {format(new Date(bill?.due_date), "dd MMM yyyy")}
             </Text>
-            <CustomButton
-              handlePress={() => {
-                router.push({
-                  pathname: "/mark-paid",
-                  params: { bill_id: bill._id },
-                });
-              }}
-              title="Mark as Paid"
-              conntainerStyles={"h-[30px] w-full mt-2 text-s"}
-              textStyles={"text-s"}
-              isDisabled={
-                bill.verfication_status === VERIFICATION_STATUS.VERIFIED ||
-                bill.verfication_status === VERIFICATION_STATUS.PENDING
-              }
-            />
+            <View className="pt-4 flex-row justify-between gap-2">
+              <CustomButton
+                handlePress={() => {
+                  router.push({
+                    pathname: "/mark-paid",
+                    params: { bill_id: bill._id },
+                  });
+                }}
+                title={
+                  bill.verification_status === VERIFICATION_STATUS.APPROVED
+                    ? "PAID"
+                    : "Mark as Paid"
+                }
+                conntainerStyles={"h-[30px] max-w-[50%] mt-2 text-s"}
+                textStyles={"text-s"}
+                isDisabled={
+                  bill.verification_status === VERIFICATION_STATUS.APPROVED ||
+                  bill.verification_status === VERIFICATION_STATUS.PENDING
+                }
+              />
+              <CustomButton
+                handlePress={() => {
+                  router.push({
+                    pathname: "/mark-paid",
+                    params: { bill_id: bill._id },
+                  });
+                }}
+                title={
+                  bill.verification_status === VERIFICATION_STATUS.APPROVED
+                    ? "PAID"
+                    : "Pay Now"
+                }
+                conntainerStyles={"h-[30px] max-w-[50%] mt-2 text-s"}
+                textStyles={"text-s"}
+                isDisabled
+              />
+            </View>
           </View>
         ))}
       </ScrollView>

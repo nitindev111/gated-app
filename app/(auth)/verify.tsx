@@ -1,19 +1,20 @@
 import { View, Text, Image, Alert } from "react-native";
 import React, { useState } from "react";
 import { OtpInput } from "react-native-otp-entry";
-import CustomButton from "../components/CustomButton";
-import images from "../../constants/images";
 import { Button } from "react-native-paper";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useAsyncStorage } from "@react-native-async-storage/async-storage";
 import axiosInstance from "../utils/axiosInstance";
 import { BACKEND_BASE_URL } from "@/config/config";
 import { VERIFY_OTP } from "@/constants/api.constants";
+import { useUser } from "../context/UserProvider";
+import { getDecodedToken } from "../utils/storageUtils";
 
 const Verify = () => {
   const router = useRouter();
   const [otp, setotp] = useState<string>("");
   const storage = useAsyncStorage("gated_user");
+  const { setUser } = useUser();
   const { orderId, phoneNumber } = useLocalSearchParams();
 
   const handleOTPSubmit = async () => {
@@ -28,10 +29,10 @@ const Verify = () => {
               otp,
             }
           );
-          console.log("respns", response.data);
           const accessToken = response.data?.access_token;
-          await storage.setItem(accessToken, (res) => {
-            console.log("response fo storage set", res);
+          storage.setItem(accessToken, async () => {
+            const decodedUser = await getDecodedToken();
+            setUser(decodedUser);
             router.replace("/home");
           });
         } catch (error) {

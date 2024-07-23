@@ -7,7 +7,7 @@ interface DecodedToken {
 }
 
 export const isTokenValid = async (): Promise<boolean> => {
-  const token = await AsyncStorage.getItem("jwt_token");
+  const token = await AsyncStorage.getItem("gated_user");
   if (token) {
     const decodedToken = jwtDecode<DecodedToken>(token);
     const currentTime = Date.now() / 1000;
