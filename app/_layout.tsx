@@ -52,7 +52,7 @@ function AppStack() {
       <Stack.Screen name="home" />
       <Stack.Screen name="mark-paid" />
       <Stack.Screen name="approveBills" />
-      <Stack.Screen name="accounts" />
+      <Stack.Screen name="bills" />
     </Stack>
   );
 }

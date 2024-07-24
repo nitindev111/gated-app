@@ -24,9 +24,8 @@ const CustomButton: React.FC<CustomButtonProps> = ({
       onPress={handlePress}
       activeOpacity={0.7}
       disabled={isLoading || isDisabled}
-      className={`${
-        isDisabled ? "bg-gray-200" : "bg-secondary"
-      } rounded-xl min-h-[20px] w-full justify-center items-center sticky bottom-0  ${conntainerStyles}`}
+      className={`${isDisabled ? "bg-gray-200" : "bg-secondary"
+        } rounded-xl min-h-[50px] w-full justify-center items-center sticky ${conntainerStyles}`}
     >
       <Text
         className={`${isDisabled ? "text-black" : "text-white"} ${textStyles}`}

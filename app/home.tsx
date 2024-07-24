@@ -9,7 +9,7 @@ import { useUser } from "./context/UserProvider";
 const HOME_SECTIONS = [
   {
     name: "My bills",
-    path: "bills",
+    path: "mybills",
     icon: "eye",
   },
   {
@@ -45,7 +45,7 @@ const HOME_SECTIONS_ADMIN = [
   },
   {
     name: "My bills",
-    path: "bills",
+    path: "mybills",
     icon: "eye",
   },
   {
@@ -74,6 +74,12 @@ const HOME_SECTIONS_ADMIN = [
     name: "Logout",
     label: "Logout",
     path: "/logout",
+    icon: "bookmark",
+  },
+  {
+    name: "Manage Bills",
+    label: "Manage Bills",
+    path: "bills",
     icon: "bookmark",
   },
 ];
