@@ -13,10 +13,12 @@ import {
 import DateTimePicker, {
   DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
+import axiosInstance from "../utils/axiosInstance";
+import { GENERATE_BILL } from "@/constants/api.constants";
 
 const GenerateBill = () => {
   const [name, setName] = useState("");
-  const [note, setNote] = useState("");
+  const [description, setDescription] = useState("");
   const [billDurationFrom, setBillDurationFrom] = useState(new Date());
   const [billDurationTo, setBillDurationTo] = useState(new Date());
   const [dueDate, setDueDate] = useState(new Date());
@@ -36,17 +38,28 @@ const GenerateBill = () => {
     setShowPicker({ type: "", visible: false });
   };
 
-  const handleGenerateBill = () => {};
+  const handleGenerateBill = async () => {
+    const payload = {
+      bill_name: name,
+      description,
+      duration_from: billDurationFrom.toISOString(),
+      duration_to: billDurationTo.toISOString(),
+      due_date: dueDate.toISOString(),
+      invoice_date: invoiceDate.toISOString(),
+      generated_at: new Date(),
+      society_id: "668ec76634a193bb66e98ead",
+    };
 
-  const handleSubmit = () => {
-    console.log({
-      name,
-      note,
-      billDurationFrom,
-      billDurationTo,
-      dueDate,
-      invoiceDate,
-    });
+    console.log("caled", payload);
+    try {
+      const url = process.env.EXPO_PUBLIC_BACKEND_BASE_URL + GENERATE_BILL;
+      const response = await axiosInstance.post(url, payload);
+      console.log("respnse, response", response);
+    } catch (error: any) {
+      console.log("====================================");
+      console.log("err", error.response.data);
+      console.log("====================================");
+    }
   };
 
   return (
@@ -69,13 +82,13 @@ const GenerateBill = () => {
             />
           </View>
           <View className="mb-6">
-            <Text className="text-base font-semibold mb-2">Note</Text>
+            <Text className="text-base font-semibold mb-2">Description</Text>
             <TextInput
-              placeholder="Enter note"
-              value={note}
+              placeholder="Enter description"
+              value={description}
               multiline={true}
               numberOfLines={4}
-              onChangeText={setNote}
+              onChangeText={setDescription}
               className="border-gray-300 border-solid border border-1 p-2 rounded-lg shadow-sm"
             />
           </View>
@@ -138,7 +151,7 @@ const GenerateBill = () => {
         </ScrollView>
         <Pressable
           className="flex items-center p-2 bg-blue-500 px-4 py-4"
-          onPress={handleSubmit}
+          onPress={handleGenerateBill}
         >
           <Text className="text-white">Submit</Text>
         </Pressable>
