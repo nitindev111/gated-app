@@ -10,7 +10,9 @@ import {
   KeyboardAvoidingView,
   SafeAreaView,
 } from "react-native";
-import DateTimePicker from "@react-native-community/datetimepicker";
+import DateTimePicker, {
+  DateTimePickerEvent,
+} from "@react-native-community/datetimepicker";
 
 const GenerateBill = () => {
   const [name, setName] = useState("");
@@ -21,7 +23,10 @@ const GenerateBill = () => {
   const [invoiceDate, setInvoiceDate] = useState(new Date());
   const [showPicker, setShowPicker] = useState({ type: "", visible: false });
 
-  const handleDateChange = (event, selectedDate) => {
+  const handleDateChange = (
+    event: DateTimePickerEvent,
+    selectedDate: Date
+  ): void => {
     if (selectedDate) {
       if (showPicker.type === "from") setBillDurationFrom(selectedDate);
       if (showPicker.type === "to") setBillDurationTo(selectedDate);
@@ -31,8 +36,9 @@ const GenerateBill = () => {
     setShowPicker({ type: "", visible: false });
   };
 
+  const handleGenerateBill = () => {};
+
   const handleSubmit = () => {
-    // Handle bill generation logic here
     console.log({
       name,
       note,
@@ -149,7 +155,7 @@ const GenerateBill = () => {
             }
             mode="date"
             display="default"
-            onChange={handleDateChange}
+            onChange={(event, data) => handleDateChange(event, data as Date)}
             style={{ width: "100%" }}
           />
         )}
