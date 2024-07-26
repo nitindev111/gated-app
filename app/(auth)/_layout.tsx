@@ -6,7 +6,7 @@ import { UserProvider } from "../context/UserProvider";
 export default function AuthLayout() {
   return (
     <UserProvider>
-      <Stack>
+      <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen
           name="login"
           options={{

@@ -9,12 +9,15 @@ import {
   Platform,
   KeyboardAvoidingView,
   SafeAreaView,
+  ActivityIndicator,
+  Alert,
 } from "react-native";
 import DateTimePicker, {
   DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
 import axiosInstance from "../utils/axiosInstance";
 import { GENERATE_BILL } from "@/constants/api.constants";
+import { useRouter } from "expo-router";
 
 const GenerateBill = () => {
   const [name, setName] = useState("");
@@ -24,6 +27,9 @@ const GenerateBill = () => {
   const [dueDate, setDueDate] = useState(new Date());
   const [invoiceDate, setInvoiceDate] = useState(new Date());
   const [showPicker, setShowPicker] = useState({ type: "", visible: false });
+  const [loading, setLoading] = useState(false);
+
+  const router = useRouter();
 
   const handleDateChange = (
     event: DateTimePickerEvent,
@@ -39,6 +45,7 @@ const GenerateBill = () => {
   };
 
   const handleGenerateBill = async () => {
+    setLoading(true);
     const payload = {
       bill_name: name,
       description,
@@ -50,15 +57,20 @@ const GenerateBill = () => {
       society_id: "668ec76634a193bb66e98ead",
     };
 
-    console.log("caled", payload);
     try {
       const url = process.env.EXPO_PUBLIC_BACKEND_BASE_URL + GENERATE_BILL;
       const response = await axiosInstance.post(url, payload);
-      console.log("respnse, response", response);
+      Alert.alert("Success", "Bill generated successfully", [
+        {
+          text: "OK",
+          onPress: () => router.push("/bills/generated-bills"),
+        },
+      ]);
     } catch (error: any) {
-      console.log("====================================");
-      console.log("err", error.response.data);
-      console.log("====================================");
+      console.error("Error generating bill:", error.response.data);
+      Alert.alert("Error", "Failed to generate bill");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -78,7 +90,7 @@ const GenerateBill = () => {
               placeholder="Enter bill name"
               value={name}
               onChangeText={setName}
-              className="border-gray-300 border-solid border border-1 p-2 rounded-lg shadow-sm"
+              className="border-gray-300 border-solid border p-2 rounded-lg shadow-sm"
             />
           </View>
           <View className="mb-6">
@@ -89,7 +101,7 @@ const GenerateBill = () => {
               multiline={true}
               numberOfLines={4}
               onChangeText={setDescription}
-              className="border-gray-300 border-solid border border-1 p-2 rounded-lg shadow-sm"
+              className="border-gray-300 border-solid border p-2 rounded-lg shadow-sm"
             />
           </View>
           <View className="mb-6">
@@ -103,7 +115,7 @@ const GenerateBill = () => {
                 placeholder="Select Date"
                 value={billDurationFrom.toDateString()}
                 editable={false}
-                className="border-gray-300 border-solid border border-1 p-2 rounded-lg shadow-sm"
+                className="border-gray-300 border-solid border p-2 rounded-lg shadow-sm"
               />
             </TouchableOpacity>
           </View>
@@ -118,7 +130,7 @@ const GenerateBill = () => {
                 placeholder="Select Date"
                 value={billDurationTo.toDateString()}
                 editable={false}
-                className="border-gray-300 border-solid border border-1 p-2 rounded-lg shadow-sm"
+                className="border-gray-300 border-solid border p-2 rounded-lg shadow-sm"
               />
             </TouchableOpacity>
           </View>
@@ -131,7 +143,7 @@ const GenerateBill = () => {
                 placeholder="Select Date"
                 value={dueDate.toDateString()}
                 editable={false}
-                className="border-gray-300 border-solid border border-1 p-2 rounded-lg shadow-sm"
+                className="border-gray-300 border-solid border p-2 rounded-lg shadow-sm"
               />
             </TouchableOpacity>
           </View>
@@ -144,7 +156,7 @@ const GenerateBill = () => {
                 placeholder="Select Date"
                 value={invoiceDate.toDateString()}
                 editable={false}
-                className="border-gray-300 border-solid border border-1 p-2 rounded-lg shadow-sm"
+                className="border-gray-300 border-solid border p-2 rounded-lg shadow-sm"
               />
             </TouchableOpacity>
           </View>
@@ -152,8 +164,13 @@ const GenerateBill = () => {
         <Pressable
           className="flex items-center p-2 bg-blue-500 px-4 py-4"
           onPress={handleGenerateBill}
+          disabled={loading}
         >
-          <Text className="text-white">Submit</Text>
+          {loading ? (
+            <ActivityIndicator size="small" color="#fff" />
+          ) : (
+            <Text className="text-white">Submit</Text>
+          )}
         </Pressable>
         {showPicker.visible && (
           <DateTimePicker
