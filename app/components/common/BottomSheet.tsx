@@ -22,7 +22,7 @@ const BottomSheet: React.FC<BottomSheetProps> = ({
       animationType="slide"
     >
       <View className="flex-1 justify-end items-center bg-black/40">
-        <View className="w-full h-[80%] bg-white rounded-t-lg p-4">
+        <View className="bg-white rounded-t-lg p-4">
           <View className="flex flex-row justify-between px-2 items-center">
             <Text className="text-lg font-bold">{title}</Text>
             <TouchableOpacity onPress={onClose} className="">

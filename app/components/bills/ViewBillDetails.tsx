@@ -57,7 +57,7 @@ const ViewBillDetails: React.FC<ViewBillDetailsProps> = ({
               {format(new Date(bill?.payment_proof?.payment_date), "P")}
             </Text>
             <Text className="text-sm">
-              Payment Type: {bill?.payment_proof?.payment_type}
+              Payment Type: {bill?.payment_proof?.payment_method}
             </Text>
             <Text className="text-sm">
               Transaction/Check No. : {bill?.payment_proof?.transaction_id}

@@ -179,7 +179,7 @@ const PaidAmountDetails = () => {
         onPress={() => {
           const data = {
             payment_date: date,
-            payment_type: paymentType,
+            payment_method: paymentType,
             transaction_id: transactionId,
             description,
             payment_screenshot_url: "http://google.com", // Placeholder URL
