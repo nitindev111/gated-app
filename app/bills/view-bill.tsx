@@ -9,13 +9,15 @@ import {
   Alert,
 } from "react-native";
 import axiosInstance from "../utils/axiosInstance";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useNavigation } from "expo-router";
+import { ScreenStackHeaderCenterView } from "react-native-screens";
 
 const ViewBill = () => {
   const [loading, setLoading] = useState(false);
   const { bill_id } = useLocalSearchParams();
   const [bill, setBill] = useState<any>(null);
   const [showBottomSheet, setShowBottomSheet] = useState(false);
+  const navigation = useNavigation();
   const [paymentDetails, setPaymentDetails] = useState({
     amount: "",
     date: new Date(),
@@ -41,6 +43,17 @@ const ViewBill = () => {
     fetchBill();
   }, []);
 
+  useEffect(() => {
+    navigation?.setOptions({
+      headerLeft: () => (
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Text className="text-blue-500">Back</Text>
+        </TouchableOpacity>
+      ),
+      title: bill?.bill_name || "View Bill",
+    });
+  }, [navigation, bill]);
+
   const handlePaymentDetailsChange = (field, value) => {
     setPaymentDetails({ ...paymentDetails, [field]: value });
   };
@@ -63,6 +76,7 @@ const ViewBill = () => {
       const response = await axiosInstance.post(url, data);
       console.log("Response:", response.data);
       Alert.alert("Bill Successfully Marked");
+      navigation.goBack();
       // handle success
       setShowBottomSheet(false);
     } catch (error) {
@@ -96,7 +110,7 @@ const ViewBill = () => {
         </Text>
         {/* Add other bill details here */}
       </ScrollView>
-      {(bill?.status !== "PAID" || bill.verification_status !== "VERIFIED") && (
+      {(bill?.status !== "PAID" || bill.verification_status !== "APPROVED") && (
         <View className="p-6 border-t border-gray-200 bg-white">
           <TouchableOpacity
             onPress={() => setShowBottomSheet(true)}
