@@ -11,10 +11,11 @@ import {
 import axiosInstance from "../utils/axiosInstance";
 import { useLocalSearchParams, useNavigation } from "expo-router";
 import { ScreenStackHeaderCenterView } from "react-native-screens";
+import { RUPEE_SYMBOL } from "@/constants/others";
 
 const ViewBill = () => {
   const [loading, setLoading] = useState(false);
-  const { bill_id } = useLocalSearchParams();
+  const { bill_id, unit_number } = useLocalSearchParams();
   const [bill, setBill] = useState<any>(null);
   const [showBottomSheet, setShowBottomSheet] = useState(false);
   const navigation = useNavigation();
@@ -50,11 +51,11 @@ const ViewBill = () => {
           <Text className="text-blue-500">Back</Text>
         </TouchableOpacity>
       ),
-      title: bill?.bill_name || "View Bill",
+      title: "  Unit: " + unit_number || "",
     });
   }, [navigation, bill]);
 
-  const handlePaymentDetailsChange = (field, value) => {
+  const handlePaymentDetailsChange = (field: string, value: string) => {
     setPaymentDetails({ ...paymentDetails, [field]: value });
   };
 
@@ -97,7 +98,7 @@ const ViewBill = () => {
       <ScrollView className="flex-1 p-6">
         <Text className="text-lg font-bold mb-4">{bill?.bill_name}</Text>
         <Text className="text-sm text-gray-600 mb-2">
-          Amount: ${bill?.amount}
+          Amount: {RUPEE_SYMBOL + bill?.amount}
         </Text>
         <Text className="text-sm text-gray-600 mb-2">
           Due Date: {new Date(bill?.due_date).toLocaleDateString()}

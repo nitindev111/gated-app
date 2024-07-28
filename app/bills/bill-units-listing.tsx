@@ -17,8 +17,8 @@ const UnitsList = () => {
   const params = useLocalSearchParams();
   const router = useRouter();
 
-  const handleOnClick = (id: string) => {
-    router.push(`/bills/view-bill?bill_id=${id}`);
+  const handleOnClick = (id: string, unit_number: string) => {
+    router.push(`/bills/view-bill?bill_id=${id}&unit_number=${unit_number}`);
   };
 
   useEffect(() => {
@@ -56,7 +56,9 @@ const UnitsList = () => {
         <TouchableOpacity
           key={index}
           className={`border border-gray-300 p-4 rounded-lg mb-4 bg-gray-50 shadow-sm flex-row items-start justify-between`}
-          onPress={() => handleOnClick(unit?.bill_id)}
+          onPress={() =>
+            handleOnClick(unit?.bill_id, unit.unit_info.unit_number)
+          }
         >
           <Text className="text-sm font-bold mb-2">
             Unit {unit.unit_info.unit_number}
