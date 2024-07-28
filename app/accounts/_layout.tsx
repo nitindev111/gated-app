@@ -10,19 +10,19 @@ export default function AuthLayout() {
       }}
     >
       <Stack.Screen
-        name="main"
+        name="balance"
         options={{
           headerShown: false,
         }}
       />
       <Stack.Screen
-        name="bank"
+        name="add-income"
         options={{
-          headerShown: true,
+          headerShown: false,
         }}
       />
       <Stack.Screen
-        name="cash"
+        name="add-expense"
         options={{
           headerShown: false,
         }}

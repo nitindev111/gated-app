@@ -1,12 +1,12 @@
 import { View, Text } from "react-native";
 import React from "react";
 
-const Main = () => {
+const AddIncome = () => {
   return (
     <View>
-      <Text>Bank</Text>
+      <Text>AddIncome</Text>
     </View>
   );
 };
 
-export default Main;
+export default AddIncome;

@@ -1,12 +1,12 @@
 import { View, Text } from "react-native";
 import React from "react";
 
-const Main = () => {
+const AddExpense = () => {
   return (
     <View>
-      <Text>Main</Text>
+      <Text>AddExpense</Text>
     </View>
   );
 };
 
-export default Main;
+export default AddExpense;
