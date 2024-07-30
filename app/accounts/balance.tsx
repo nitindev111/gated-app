@@ -46,7 +46,7 @@ const AccountsList = () => {
           className="p-4 mb-4 bg-white rounded-lg shadow-md border border-gray-200"
         >
           <Text className="text-lg font-bold mb-2 uppercase">
-            {account.type}
+            {account.label}
           </Text>
           <Text className="text-sm text-gray-600 mb-2">
             {account.description}

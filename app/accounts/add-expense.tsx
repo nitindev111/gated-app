@@ -1,10 +1,218 @@
-import { View, Text } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  ScrollView,
+  ActivityIndicator,
+  Alert,
+} from "react-native";
+import axiosInstance from "../utils/axiosInstance";
+import { Picker } from "@react-native-picker/picker";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import { BACKEND_BASE_URL } from "@/config/config";
 
-const AddExpense = () => {
+const AddExpense = ({ societyId = "668ec76634a193bb66e98ead" }) => {
+  const [categories, setCategories] = useState(["Electricity", "Salary"]);
+  const [accounts, setAccounts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [form, setForm] = useState({
+    category: "",
+    account_id: "",
+    description: "",
+    amount: "",
+    date: new Date(),
+    payment_method: "",
+    type: "INCOME",
+  });
+  const [showDatePicker, setShowDatePicker] = useState(false);
+
+  useEffect(() => {
+    const fetchAccounts = async () => {
+      try {
+        const response = await axiosInstance.get(
+          `${BACKEND_BASE_URL}/accounts/view?society_id=${societyId}`
+        );
+        setAccounts(response.data);
+      } catch (error) {
+        console.error("Error fetching accounts:", error);
+      }
+    };
+
+    const fetchData = async () => {
+      setLoading(true);
+      await fetchAccounts();
+      setLoading(false);
+    };
+
+    fetchData();
+  }, [societyId]);
+
+  const handleInputChange = (field: string, value: any) => {
+    setForm({ ...form, [field]: value });
+  };
+
+  const validateForm = () => {
+    if (
+      !form.category ||
+      !form.account_id ||
+      !form.description ||
+      !form.amount ||
+      !form.date ||
+      !form.payment_method
+    ) {
+      Alert.alert("Validation Error", "All fields are required.");
+      return false;
+    }
+    if (Number(form.amount) <= 0) {
+      Alert.alert("Validation Error", "Amount should be a positive number.");
+      return false;
+    }
+    return true;
+  };
+
+  const handleSubmit = async () => {
+    if (!validateForm()) return;
+
+    try {
+      const url = `${BACKEND_BASE_URL}/expense/create`;
+      const data = {
+        category: form.category,
+        account_id: form.account_id,
+        description: form.description,
+        amount: form.amount,
+        date: form.date.toISOString(),
+        payment_method: form.payment_method,
+        type: "EXPENSE",
+      };
+      console.log("DATA", data);
+
+      const response = await axiosInstance.post(url, data);
+      console.log("Expense recorded successfully:", response.data);
+      Alert.alert("Success", "Expense recorded successfully.");
+      // Reset form
+      setForm({
+        category: "",
+        account_id: "",
+        description: "",
+        amount: "",
+        date: new Date(),
+        payment_method: "",
+        type: "EXPENSE",
+      });
+    } catch (error) {
+      console.error("Error recording expense:", error.response.data);
+      Alert.alert("Error", "Failed to record expense. Please try again.");
+    }
+  };
+
+  if (loading) {
+    return (
+      <View className="flex-1 justify-center items-center">
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
+
   return (
-    <View>
-      <Text>AddExpense</Text>
+    <View className="flex-1 bg-white">
+      <ScrollView
+        contentContainerStyle={{ paddingBottom: 100 }}
+        className="p-6"
+      >
+        <Text className="text-lg font-bold mb-4">Record Expense</Text>
+        <Text className="text-sm font-semibold mb-2">Category</Text>
+        <View className="border border-gray-300 rounded-lg mb-4">
+          <Picker
+            selectedValue={form.category}
+            onValueChange={(value) => handleInputChange("category", value)}
+            className="h-10"
+          >
+            <Picker.Item label="Select Category" value="" />
+            {categories.map((category, index) => (
+              <Picker.Item key={index} label={category} value={category} />
+            ))}
+          </Picker>
+        </View>
+        <View className="border border-gray-300 rounded-lg mb-4">
+          <Picker
+            selectedValue={form.payment_method}
+            onValueChange={(value) =>
+              handleInputChange("payment_method", value)
+            }
+            className="h-10"
+          >
+            <Picker.Item label="Select Payment Method" value="" />
+            {["Online", "Cash"].map((method, index) => (
+              <Picker.Item key={index} label={method} value={method} />
+            ))}
+          </Picker>
+        </View>
+
+        <Text className="text-sm font-semibold mb-2">Payment From</Text>
+        <View className="border border-gray-300 rounded-lg mb-4">
+          <Picker
+            selectedValue={form.account_id}
+            onValueChange={(value) => handleInputChange("account_id", value)}
+            className="h-10"
+          >
+            <Picker.Item label="Select Account" value="" />
+            {accounts.map((account: any) => (
+              <Picker.Item
+                key={account._id}
+                label={account.label}
+                value={account._id}
+              />
+            ))}
+          </Picker>
+        </View>
+
+        <Text className="text-sm font-semibold mb-2">Description</Text>
+        <TextInput
+          value={form.description}
+          onChangeText={(text) => handleInputChange("description", text)}
+          placeholder="Description"
+          className="mb-4 border border-gray-300 rounded-lg p-2"
+        />
+
+        <Text className="text-sm font-semibold mb-2">Amount</Text>
+        <TextInput
+          value={form.amount}
+          onChangeText={(text) => handleInputChange("amount", text)}
+          placeholder="Amount"
+          keyboardType="numeric"
+          className="mb-4 border border-gray-300 rounded-lg p-2"
+        />
+
+        <Text className="text-sm font-semibold mb-2">Transaction Date</Text>
+        <TouchableOpacity
+          onPress={() => setShowDatePicker(true)}
+          className="mb-4 border border-gray-300 rounded-lg p-2 justify-center"
+        >
+          <Text>{form.date.toDateString()}</Text>
+        </TouchableOpacity>
+
+        {showDatePicker && (
+          <DateTimePicker
+            value={form.date}
+            mode="date"
+            display="default"
+            onChange={(event, selectedDate) => {
+              setShowDatePicker(false);
+              if (selectedDate) {
+                handleInputChange("date", selectedDate);
+              }
+            }}
+          />
+        )}
+      </ScrollView>
+      <TouchableOpacity
+        onPress={handleSubmit}
+        className="bg-blue-500 p-4 rounded-lg absolute bottom-0 left-0 right-0"
+      >
+        <Text className="text-white text-center font-bold">Submit</Text>
+      </TouchableOpacity>
     </View>
   );
 };

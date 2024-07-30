@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   View,
   Text,
@@ -9,8 +9,8 @@ import {
   Alert,
 } from "react-native";
 import axiosInstance from "../utils/axiosInstance";
-import { Picker } from "@react-native-picker/picker";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import { Modalize } from "react-native-modalize";
 import { BACKEND_BASE_URL } from "@/config/config";
 
 const AddIncome = ({ societyId = "668ec76634a193bb66e98ead" }) => {
@@ -19,14 +19,15 @@ const AddIncome = ({ societyId = "668ec76634a193bb66e98ead" }) => {
   const [loading, setLoading] = useState(true);
   const [form, setForm] = useState({
     category: "",
-    account_id: "",
+    account: "",
     description: "",
     amount: "",
     date: new Date(),
-    payment_method: "",
-    type: "INCOME",
   });
   const [showDatePicker, setShowDatePicker] = useState(false);
+
+  const categoryModalRef = useRef(null);
+  const accountModalRef = useRef(null);
 
   useEffect(() => {
     const fetchAccounts = async () => {
@@ -42,25 +43,24 @@ const AddIncome = ({ societyId = "668ec76634a193bb66e98ead" }) => {
 
     const fetchData = async () => {
       setLoading(true);
-      await fetchAccounts();
+      await Promise.all([fetchAccounts()]);
       setLoading(false);
     };
 
     fetchData();
   }, [societyId]);
 
-  const handleInputChange = (field: string, value: any) => {
+  const handleInputChange = (field, value) => {
     setForm({ ...form, [field]: value });
   };
 
   const validateForm = () => {
     if (
       !form.category ||
-      !form.account_id ||
+      !form.account ||
       !form.description ||
       !form.amount ||
-      !form.date ||
-      !form.payment_method
+      !form.date
     ) {
       Alert.alert("Validation Error", "All fields are required.");
       return false;
@@ -79,30 +79,24 @@ const AddIncome = ({ societyId = "668ec76634a193bb66e98ead" }) => {
       const url = `${BACKEND_BASE_URL}/income/create`;
       const data = {
         category: form.category,
-        account_id: form.account_id,
+        account: form.account,
         description: form.description,
         amount: form.amount,
         date: form.date.toISOString(),
-        payment_method: form.payment_method,
-        type: "INCOME",
       };
-      console.log("DATA", data);
-
       const response = await axiosInstance.post(url, data);
       console.log("Income recorded successfully:", response.data);
       Alert.alert("Success", "Income recorded successfully.");
       // Reset form
       setForm({
         category: "",
-        account_id: "",
+        account: "",
         description: "",
         amount: "",
         date: new Date(),
-        payment_method: "",
-        type: "INCOME",
       });
     } catch (error) {
-      console.error("Error recording income:", error.response.data);
+      console.error("Error recording income:", error);
       Alert.alert("Error", "Failed to record income. Please try again.");
     }
   };
@@ -123,50 +117,20 @@ const AddIncome = ({ societyId = "668ec76634a193bb66e98ead" }) => {
       >
         <Text className="text-lg font-bold mb-4">Record Income</Text>
         <Text className="text-sm font-semibold mb-2">Category</Text>
-        <View className="border border-gray-300 rounded-lg mb-4">
-          <Picker
-            selectedValue={form.category}
-            onValueChange={(value) => handleInputChange("category", value)}
-            className="h-10"
-          >
-            <Picker.Item label="Select Category" value="" />
-            {categories.map((category, index) => (
-              <Picker.Item key={index} label={category} value={category} />
-            ))}
-          </Picker>
-        </View>
-        <View className="border border-gray-300 rounded-lg mb-4">
-          <Picker
-            selectedValue={form.payment_method}
-            onValueChange={(value) =>
-              handleInputChange("payment_method", value)
-            }
-            className="h-10"
-          >
-            <Picker.Item label="Select Payment Method" value="" />
-            {["Online", "Cash"].map((method, index) => (
-              <Picker.Item key={index} label={method} value={method} />
-            ))}
-          </Picker>
-        </View>
+        <TouchableOpacity
+          onPress={() => categoryModalRef.current?.open()}
+          className="mb-4 border border-gray-300 rounded-lg p-2"
+        >
+          <Text>{form.category || "Select Category"}</Text>
+        </TouchableOpacity>
 
         <Text className="text-sm font-semibold mb-2">Payment Account</Text>
-        <View className="border border-gray-300 rounded-lg mb-4">
-          <Picker
-            selectedValue={form.account_id}
-            onValueChange={(value) => handleInputChange("account_id", value)}
-            className="h-10"
-          >
-            <Picker.Item label="Select Account" value="" />
-            {accounts.map((account: any) => (
-              <Picker.Item
-                key={account._id}
-                label={account.label}
-                value={account._id}
-              />
-            ))}
-          </Picker>
-        </View>
+        <TouchableOpacity
+          onPress={() => accountModalRef.current?.open()}
+          className="mb-4 border border-gray-300 rounded-lg p-2"
+        >
+          <Text>{form.account || "Select Account"}</Text>
+        </TouchableOpacity>
 
         <Text className="text-sm font-semibold mb-2">Description</Text>
         <TextInput
@@ -213,6 +177,44 @@ const AddIncome = ({ societyId = "668ec76634a193bb66e98ead" }) => {
       >
         <Text className="text-white text-center font-bold">Submit</Text>
       </TouchableOpacity>
+
+      {/* Category Bottom Sheet */}
+      <Modalize ref={categoryModalRef} adjustToContentHeight>
+        <View className="p-4">
+          <Text className="text-lg font-bold mb-4">Select Category</Text>
+          {categories.map((category, index) => (
+            <TouchableOpacity
+              key={index}
+              onPress={() => {
+                handleInputChange("category", category);
+                categoryModalRef.current?.close();
+              }}
+              className="p-4 border-b border-gray-300"
+            >
+              <Text>{category}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      </Modalize>
+
+      {/* Account Bottom Sheet */}
+      <Modalize ref={accountModalRef} adjustToContentHeight>
+        <View className="p-4">
+          <Text className="text-lg font-bold mb-4">Select Account</Text>
+          {accounts.map((account) => (
+            <TouchableOpacity
+              key={account._id}
+              onPress={() => {
+                handleInputChange("account", account.description);
+                accountModalRef.current?.close();
+              }}
+              className="p-4 border-b border-gray-300"
+            >
+              <Text>{account.description}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      </Modalize>
     </View>
   );
 };
