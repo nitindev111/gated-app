@@ -10,26 +10,27 @@ import {
 } from "react-native";
 import axiosInstance from "../utils/axiosInstance";
 import { useLocalSearchParams, useNavigation } from "expo-router";
-import { ScreenStackHeaderCenterView } from "react-native-screens";
 import { RUPEE_SYMBOL } from "@/constants/others";
 
 const ViewBill = () => {
   const [loading, setLoading] = useState(false);
   const { bill_id, unit_number } = useLocalSearchParams();
   const [bill, setBill] = useState<any>(null);
+  const [accounts, setAccounts] = useState([]);
   const [showBottomSheet, setShowBottomSheet] = useState(false);
+  const [showAccountModal, setShowAccountModal] = useState(false);
   const navigation = useNavigation();
   const [paymentDetails, setPaymentDetails] = useState({
-    amount: "",
+    account_id: "",
     date: new Date(),
     voucherCode: "",
     paymentMode: "online",
+    description: "",
   });
 
   const fetchBill = async () => {
     setLoading(true);
-    const url =
-      process.env.EXPO_PUBLIC_BACKEND_BASE_URL + `/bills/fetch?id=` + bill_id;
+    const url = `${process.env.EXPO_PUBLIC_BACKEND_BASE_URL}/bills/fetch?id=${bill_id}`;
     try {
       const response = await axiosInstance.get(url);
       setBill(response.data);
@@ -40,8 +41,20 @@ const ViewBill = () => {
     }
   };
 
+  const fetchAccounts = async () => {
+    try {
+      const response = await axiosInstance.get(
+        `${process.env.EXPO_PUBLIC_BACKEND_BASE_URL}/accounts/view?society_id=668ec76634a193bb66e98ead`
+      );
+      setAccounts(response.data);
+    } catch (error) {
+      console.error("Error fetching accounts:", error);
+    }
+  };
+
   useEffect(() => {
     fetchBill();
+    fetchAccounts();
   }, []);
 
   useEffect(() => {
@@ -59,26 +72,36 @@ const ViewBill = () => {
     setPaymentDetails({ ...paymentDetails, [field]: value });
   };
 
+  const validateForm = () => {
+    const { account_id, date, paymentMode, description } = paymentDetails;
+    if (!account_id || !date || !paymentMode || !description) {
+      Alert.alert("Validation Error", "Please fill the required fields.");
+      return false;
+    }
+    return true;
+  };
+
   const handleMarkAsPaid = async () => {
+    if (!validateForm()) return;
+
     try {
-      const url = process.env.EXPO_PUBLIC_BACKEND_BASE_URL + "/bills/mark-paid"; // replace with actual endpoint
+      const url = `${process.env.EXPO_PUBLIC_BACKEND_BASE_URL}/bills/mark-paid`;
 
       const data = {
         bill_ids: [bill?._id],
         payment_proof: {
-          amount: paymentDetails.amount,
+          account_id: paymentDetails.account_id,
           payment_date: paymentDetails.date.toISOString(),
           voucherCode: paymentDetails.voucherCode,
           payment_method: paymentDetails.paymentMode,
+          description: paymentDetails.description,
         },
       };
 
-      console.log("data", data);
       const response = await axiosInstance.post(url, data);
       console.log("Response:", response.data);
       Alert.alert("Bill Successfully Marked");
       navigation.goBack();
-      // handle success
       setShowBottomSheet(false);
     } catch (error) {
       console.error("Failed to mark bill as paid:", error);
@@ -109,7 +132,6 @@ const ViewBill = () => {
         <Text className="text-sm text-gray-600 mb-2">
           Description: {bill?.description}
         </Text>
-        {/* Add other bill details here */}
       </ScrollView>
       {(bill?.status !== "PAID" || bill.verification_status !== "APPROVED") && (
         <View className="p-6 border-t border-gray-200 bg-white">
@@ -122,55 +144,106 @@ const ViewBill = () => {
         </View>
       )}
 
-      <Modal visible={showBottomSheet} animationType="slide" transparent={true}>
-        <View className="flex-1 justify-end">
-          <View className="bg-gray-200 p-6 rounded-t-lg">
-            <Text className="text-lg font-bold mb-4">Mark as Paid</Text>
-            <TextInput
-              placeholder="Amount"
-              value={paymentDetails.amount}
-              onChangeText={(text) =>
-                handlePaymentDetailsChange("amount", text)
-              }
-              className="border-gray-300 border-solid border border-1 p-2 rounded-lg mb-4"
-            />
+      <Modal
+        visible={showBottomSheet}
+        animationType="slide"
+        transparent={false}
+      >
+        <View className="flex-1 bg-white p-6">
+          <Text className="text-lg font-bold mb-4">Mark as Paid</Text>
+          <TouchableOpacity
+            onPress={() => setShowAccountModal(true)}
+            className="border-gray-300 border-solid border border-1 p-2 rounded-lg mb-4"
+          >
+            <Text>
+              {paymentDetails.account_id
+                ? paymentDetails.account_id
+                : "Select Account"}
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() =>
+              handlePaymentDetailsChange(
+                "date",
+                new Date().toLocaleTimeString()
+              )
+            }
+            className="border-gray-300 border-solid border border-1 p-2 rounded-lg mb-4"
+          >
+            <Text>{paymentDetails?.date?.toDateString()}</Text>
+          </TouchableOpacity>
+          <TextInput
+            placeholder="Voucher Code"
+            value={paymentDetails.voucherCode}
+            onChangeText={(text) =>
+              handlePaymentDetailsChange("voucherCode", text)
+            }
+            className="border-gray-300 border-solid border border-1 p-2 rounded-lg mb-4"
+          />
+          <TextInput
+            placeholder="Payment Mode (Online or Cash)"
+            value={paymentDetails.paymentMode}
+            onChangeText={(text) =>
+              handlePaymentDetailsChange("paymentMode", text)
+            }
+            className="border-gray-300 border-solid border border-1 p-2 rounded-lg mb-4"
+          />
+          <TextInput
+            placeholder="Description"
+            value={paymentDetails.description}
+            onChangeText={(text) =>
+              handlePaymentDetailsChange("description", text)
+            }
+            className="border-gray-300 border-solid border border-1 p-2 rounded-lg mb-4"
+          />
+          <View className="flex flex-row gap-2 items-center w-full">
             <TouchableOpacity
-              onPress={() => handlePaymentDetailsChange("date", new Date())}
+              onPress={handleMarkAsPaid}
+              className="w-[50%] bg-blue-500 p-4 rounded-lg"
             >
-              <Text className="border-gray-300 border-solid border border-1 p-2 rounded-lg mb-4">
-                {paymentDetails?.date?.toDateString()}
-              </Text>
+              <Text className="text-white text-center">Submit</Text>
             </TouchableOpacity>
-            <TextInput
-              placeholder="Voucher Code"
-              value={paymentDetails?.voucherCode}
-              onChangeText={(text) =>
-                handlePaymentDetailsChange("voucherCode", text)
-              }
-              className="border-gray-300 border-solid border border-1 p-2 rounded-lg mb-4"
-            />
-            <TextInput
-              placeholder="Payment Mode (Online or Cash)"
-              value={paymentDetails?.paymentMode}
-              onChangeText={(text) =>
-                handlePaymentDetailsChange("paymentMode", text)
-              }
-              className="border-gray-300 border-solid border border-1 p-2 rounded-lg mb-4"
-            />
-            <View className="flex flex-row gap-2 items-center w-full">
-              <TouchableOpacity
-                onPress={handleMarkAsPaid}
-                className="w-[50%] bg-blue-500 p-4 rounded-lg"
-              >
-                <Text className="text-white text-center">Submit</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => setShowBottomSheet(false)}
-                className="w-[50%] bg-red-700 p-4 rounded-lg"
-              >
-                <Text className="text-white text-center">Cancel</Text>
-              </TouchableOpacity>
-            </View>
+            <TouchableOpacity
+              onPress={() => setShowBottomSheet(false)}
+              className="w-[50%] bg-red-700 p-4 rounded-lg"
+            >
+              <Text className="text-white text-center">Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      <Modal
+        visible={showAccountModal}
+        animationType="slide"
+        transparent={true}
+      >
+        <View className="flex-1 justify-center items-center bg-black bg-opacity-50">
+          <View className="bg-white p-6 rounded-lg w-3/4">
+            <ScrollView className="mb-4">
+              {accounts.map((account: any) => (
+                <TouchableOpacity
+                  key={account._id}
+                  onPress={() => {
+                    handlePaymentDetailsChange("account_id", account._id);
+                    setShowAccountModal(false);
+                  }}
+                  className={`border-gray-300 border-solid border border-1 p-2 rounded-lg mb-2 ${
+                    paymentDetails.account_id === account._id
+                      ? "bg-blue-100"
+                      : ""
+                  }`}
+                >
+                  <Text>{account.label}</Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+            <TouchableOpacity
+              onPress={() => setShowAccountModal(false)}
+              className="bg-red-700 p-4 rounded-lg"
+            >
+              <Text className="text-white text-center">Cancel</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </Modal>

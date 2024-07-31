@@ -21,6 +21,7 @@ import { useRouter } from "expo-router";
 
 const GenerateBill = () => {
   const [name, setName] = useState("");
+  const [amount, setAmount] = useState("");
   const [description, setDescription] = useState("");
   const [billDurationFrom, setBillDurationFrom] = useState(new Date());
   const [billDurationTo, setBillDurationTo] = useState(new Date());
@@ -55,6 +56,7 @@ const GenerateBill = () => {
       invoice_date: invoiceDate.toISOString(),
       generated_at: new Date(),
       society_id: "668ec76634a193bb66e98ead",
+      amount,
     };
 
     try {
@@ -90,6 +92,15 @@ const GenerateBill = () => {
               placeholder="Enter bill name"
               value={name}
               onChangeText={setName}
+              className="border-gray-300 border-solid border p-2 rounded-lg shadow-sm"
+            />
+          </View>
+          <View className="mb-6">
+            <Text className="text-base font-semibold mb-2">Base amount</Text>
+            <TextInput
+              placeholder="Enter bill name"
+              value={amount}
+              onChangeText={setAmount}
               className="border-gray-300 border-solid border p-2 rounded-lg shadow-sm"
             />
           </View>
