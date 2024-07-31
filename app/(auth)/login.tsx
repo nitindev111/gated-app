@@ -1,11 +1,12 @@
 import { View, Text, Image, useColorScheme, Alert } from "react-native";
 import React, { useState } from "react";
 import images from "../../constants/images";
-import { Button, TextInput } from "react-native-paper";
+import { TextInput } from "react-native-paper";
 import axiosInstance from "../utils/axiosInstance";
 import { BACKEND_BASE_URL } from "../../config/config";
 import { SEND_OTP } from "@/constants/api.constants";
 import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
+import Button from "../components/common/Button";
 
 const Login = () => {
   const themeColor = useColorScheme();
@@ -61,11 +62,6 @@ const Login = () => {
   };
   return (
     <View className="p-5 w-full">
-      <Image
-        source={images.logo}
-        className="w-[100px] h-[100px] m-auto"
-        resizeMode="contain"
-      />
       <View className="flex gap-4 ">
         <TextInput
           keyboardType="number-pad"
@@ -76,7 +72,14 @@ const Login = () => {
           autoFocus
           className="color-secondary"
         />
-        <Button
+        <View className="pt-2">
+          <Button
+            title="Submit"
+            disabled={phoneNumber.length !== 10}
+            onPress={handleContinue}
+          />
+        </View>
+        {/* <Button
           textColor="#ffff"
           className="bg-secondary rounded-xl min-h-[50px] flex justify-center"
           shouldRasterizeIOS
@@ -85,7 +88,7 @@ const Login = () => {
           onPress={handleContinue}
         >
           Submit
-        </Button>
+        </Button> */}
       </View>
     </View>
   );

@@ -27,6 +27,12 @@ export default function AuthLayout() {
           headerShown: false,
         }}
       />
+      <Stack.Screen
+        name="transactions"
+        options={{
+          headerShown: false,
+        }}
+      />
     </Stack>
   );
 }

@@ -44,16 +44,6 @@ const HOME_SECTIONS_ADMIN = [
     icon: "eye",
   },
   {
-    name: "My bills",
-    path: "mybills",
-    icon: "eye",
-  },
-  {
-    name: "Approve Bills",
-    path: "approveBills",
-    icon: "eye",
-  },
-  {
     name: "Members",
     path: "members",
     icon: "play",
@@ -65,21 +55,15 @@ const HOME_SECTIONS_ADMIN = [
     icon: "profile",
   },
   {
-    name: "Visitors",
-    label: "Visitors",
-    path: "visitors",
+    name: "Manage Bills",
+    label: "Manage Bills",
+    path: "bills",
     icon: "bookmark",
   },
   {
     name: "Logout",
     label: "Logout",
     path: "/logout",
-    icon: "bookmark",
-  },
-  {
-    name: "Manage Bills",
-    label: "Manage Bills",
-    path: "bills",
     icon: "bookmark",
   },
 ];

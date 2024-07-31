@@ -1,7 +1,6 @@
 import { View, Text, Image, Alert } from "react-native";
 import React, { useState } from "react";
 import { OtpInput } from "react-native-otp-entry";
-import { Button } from "react-native-paper";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useAsyncStorage } from "@react-native-async-storage/async-storage";
 import axiosInstance from "../utils/axiosInstance";
@@ -9,6 +8,7 @@ import { BACKEND_BASE_URL } from "@/config/config";
 import { VERIFY_OTP } from "@/constants/api.constants";
 import { useUser } from "../context/UserProvider";
 import { getDecodedToken } from "../utils/storageUtils";
+import Button from "../components/common/Button";
 
 const Verify = () => {
   const router = useRouter();
@@ -44,7 +44,7 @@ const Verify = () => {
   };
 
   return (
-    <View className="p-5 w-full  bg-white">
+    <View className="p-5 w-full h-full  bg-white">
       <Text className="text-2xl font-bold text-center">Verify OTP</Text>
       <OtpInput
         theme={{
@@ -56,16 +56,13 @@ const Verify = () => {
         onTextChange={(text) => setotp(text)}
       />
       <View className="">
-        <Button
-          textColor="#ffff"
-          className="bg-secondary rounded-xl min-h-[50px] flex justify-center"
-          shouldRasterizeIOS
-          focusable
-          disabled={otp.length !== 6}
-          onPress={handleOTPSubmit}
-        >
-          Submit
-        </Button>
+        <View className="pt-2">
+          <Button
+            title="Submit"
+            disabled={otp?.length !== 6}
+            onPress={handleOTPSubmit}
+          />
+        </View>
       </View>
     </View>
   );

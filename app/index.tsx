@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-import { Alert, BackHandler, Image, Text, View } from "react-native";
+import { Alert, BackHandler, Image, Pressable, Text, View } from "react-native";
 import {
   GestureHandlerRootView,
   ScrollView,
@@ -12,6 +12,7 @@ import images from "@/constants/images";
 import CustomButton from "./components/CustomButton";
 import useAuthRedirect from "./hooks/useAuthRedirect";
 import { UserProvider } from "./context/UserProvider";
+import Button from "./components/common/Button";
 
 if (__DEV__) {
   require("../ReactotronConfig");
@@ -43,29 +44,24 @@ const AppContent = () => {
   );
 
   return (
-    <SafeAreaView className="bg-primary h-full">
+    <SafeAreaView className="bg-white h-full">
       <GestureHandlerRootView>
         <ScrollView contentContainerStyle={{ height: "100%" }}>
-          <View className="w-full items-center justify-center h-full px-4">
+          <View className="w-full items-center justify-start h-full px-4">
             <Image
-              source={images.logo}
-              className="w-[130px] h-[84px]"
-              resizeMode="contain"
-            />
-            <Image
-              source={images.cards}
+              source={images.gateup}
               className="w-[380px] h-[300px]"
-              resizeMode="contain"
+              resizeMode="cover"
             />
-            <Text className="text-secondary">this is some custom text</Text>
-            <View className="pt-5"></View>
-            <CustomButton
-              title="Continue with Phone number"
-              handlePress={() => {
-                router.replace("login");
-              }}
-              isDisabled={false}
-            />
+            <View className="pt-2">
+              <Button
+                title="Continue with mobile number"
+                disabled={false}
+                onPress={() => {
+                  router.replace("login");
+                }}
+              />
+            </View>
           </View>
         </ScrollView>
         <StatusBar backgroundColor="#161622" style="light" />

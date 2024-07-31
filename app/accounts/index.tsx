@@ -35,6 +35,14 @@ const ManageBills = () => {
           Add Expense
         </Text>
       </TouchableOpacity>
+      <TouchableOpacity
+        className="bg-green-500 m-4 p-6 rounded-lg shadow-md"
+        onPress={() => handleSectionClick("accounts/transactions")}
+      >
+        <Text className="text-lg font-bold text-white text-center">
+          Transactions
+        </Text>
+      </TouchableOpacity>
     </View>
   );
 };

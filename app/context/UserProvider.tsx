@@ -11,9 +11,6 @@ const UserContext = createContext<UserContextType | null>(null);
 
 export const UserProvider: React.FC<any> = ({ children }) => {
   const [user, setUser] = useState<any>(null);
-  console.log("====================================");
-  console.log("user in the context", user);
-  console.log("====================================");
 
   const clearUser = () => {
     console.log("Clearing user");
