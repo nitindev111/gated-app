@@ -54,10 +54,8 @@ const Login = () => {
         Alert.alert("Something went wrong");
       }
     } else {
-      Alert.alert(
-        "Error",
-        "This Phone number is not Associated with any Society. Please contact your Society Manager"
-      );
+      const message = ` base url - ${BACKEND_BASE_URL} : This Phone number is not Associated with any Society. Please contact your Society Manager`;
+      Alert.alert("Error", message);
     }
   };
   return (

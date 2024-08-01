@@ -11,6 +11,7 @@ import {
 import axiosInstance from "../utils/axiosInstance";
 import { useLocalSearchParams, useNavigation } from "expo-router";
 import { RUPEE_SYMBOL } from "@/constants/others";
+import { BACKEND_BASE_URL } from "@/config/config";
 
 const ViewBill = () => {
   const [loading, setLoading] = useState(false);
@@ -30,7 +31,7 @@ const ViewBill = () => {
 
   const fetchBill = async () => {
     setLoading(true);
-    const url = `${process.env.EXPO_PUBLIC_BACKEND_BASE_URL}/bills/fetch?id=${bill_id}`;
+    const url = `${BACKEND_BASE_URL}/bills/fetch?id=${bill_id}`;
     try {
       const response = await axiosInstance.get(url);
       setBill(response.data);
@@ -44,7 +45,7 @@ const ViewBill = () => {
   const fetchAccounts = async () => {
     try {
       const response = await axiosInstance.get(
-        `${process.env.EXPO_PUBLIC_BACKEND_BASE_URL}/accounts/view?society_id=668ec76634a193bb66e98ead`
+        `${BACKEND_BASE_URL}/accounts/view?society_id=668ec76634a193bb66e98ead`
       );
       setAccounts(response.data);
     } catch (error) {
@@ -85,7 +86,7 @@ const ViewBill = () => {
     if (!validateForm()) return;
 
     try {
-      const url = `${process.env.EXPO_PUBLIC_BACKEND_BASE_URL}/bills/mark-paid`;
+      const url = `${BACKEND_BASE_URL}/bills/mark-paid`;
 
       const data = {
         bill_ids: [bill?._id],

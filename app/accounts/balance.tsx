@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import axiosInstance from "../utils/axiosInstance";
 import { RUPEE_SYMBOL } from "@/constants/others";
+import { BACKEND_BASE_URL } from "@/config/config";
 
 const AccountsList = () => {
   const [accounts, setAccounts] = useState([]);
@@ -15,7 +16,7 @@ const AccountsList = () => {
 
   useEffect(() => {
     const fetchAccounts = async () => {
-      const url = `${process.env.EXPO_PUBLIC_BACKEND_BASE_URL}/accounts/view?society_id=668ec76634a193bb66e98ead`;
+      const url = `${BACKEND_BASE_URL}/accounts/view?society_id=668ec76634a193bb66e98ead`;
 
       try {
         const response = await axiosInstance.get(url); // Replace with the correct endpoint

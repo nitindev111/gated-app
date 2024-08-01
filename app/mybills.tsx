@@ -47,7 +47,7 @@ const Bills = () => {
   useEffect(() => {
     const fetchBills = async () => {
       setLoading(true);
-      const url = process.env.EXPO_PUBLIC_BACKEND_BASE_URL + `/bills/fetchAll`;
+      const url = BACKEND_BASE_URL + `/bills/fetchAll`;
       try {
         const response = await axiosInstance.post(url, {
           filters: {},

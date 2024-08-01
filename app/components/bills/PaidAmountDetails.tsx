@@ -18,9 +18,7 @@ const PaidAmountDetails = () => {
 
   useEffect(() => {
     const fetchBill = async () => {
-      const url =
-        process.env.EXPO_PUBLIC_BACKEND_BASE_URL +
-        `/bills/fetch?id=${router?.bill_id}`;
+      const url = BACKEND_BASE_URL + `/bills/fetch?id=${router?.bill_id}`;
 
       try {
         const response = await axiosInstance.get(url);

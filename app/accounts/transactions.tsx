@@ -28,7 +28,7 @@ const Transactions = () => {
   const fetchTransactions = async (filterParams = {}) => {
     setLoading(true);
     try {
-      const url = `${process.env.EXPO_PUBLIC_BACKEND_BASE_URL}/transactions/fetchAll`;
+      const url = `${BACKEND_BASE_URL}/transactions/fetchAll`;
       const response = await axiosInstance.get(url, { params: filterParams });
       setTransactions(response.data);
     } catch (error) {
@@ -39,7 +39,7 @@ const Transactions = () => {
   };
 
   const fetchAccounts = async () => {
-    const url = `${process.env.EXPO_PUBLIC_BACKEND_BASE_URL}/accounts/view?society_id=${societyId}`;
+    const url = `${BACKEND_BASE_URL}/accounts/view?society_id=${societyId}`;
     try {
       const response = await axiosInstance.get(url);
       setAccounts(response.data);

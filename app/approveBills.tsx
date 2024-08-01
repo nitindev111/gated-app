@@ -5,6 +5,7 @@ import CustomButton from "./components/CustomButton";
 import axiosInstance from "./utils/axiosInstance";
 import ViewBill from "./viewBill";
 import { useRouter } from "expo-router";
+import { BACKEND_BASE_URL } from "@/config/config";
 
 const ApproveBills = () => {
   const [bills, setBills] = useState([]);
@@ -17,7 +18,7 @@ const ApproveBills = () => {
 
   const fetchBills = async () => {
     setLoading(true);
-    const url = `${process.env.EXPO_PUBLIC_BACKEND_BASE_URL}/bills/verification-pending?society_id=668ec76634a193bb66e98ead`;
+    const url = `${BACKEND_BASE_URL}/bills/verification-pending?society_id=668ec76634a193bb66e98ead`;
     try {
       const response = await axiosInstance.get(url);
       setBills(response.data);
@@ -35,7 +36,7 @@ const ApproveBills = () => {
 
   const handleApproveBill = async () => {
     setLoading(true);
-    const url = `${process.env.EXPO_PUBLIC_BACKEND_BASE_URL}/bills/approve`;
+    const url = `${BACKEND_BASE_URL}/bills/approve`;
     try {
       const response = await axiosInstance.patch(url, {
         // @ts-expect-error

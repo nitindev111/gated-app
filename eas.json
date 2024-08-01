@@ -3,6 +3,9 @@
     "preview": {
       "android": {
         "buildType": "apk"
+      },
+      "env": {
+        "EXPO_PUBLIC_BACKEND_BASE_URL": "http://gateup.in/api"
       }
     },
     "preview2": {
@@ -11,7 +14,10 @@
       }
     },
     "preview3": {
-      "developmentClient": true
+      "developmentClient": true,
+      "env": {
+        "EXPO_PUBLIC_BACKEND_BASE_URL": "http://gateup.in/api"
+      }
     },
     "preview4": {
       "distribution": "internal"

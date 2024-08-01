@@ -60,7 +60,7 @@ const GenerateBill = () => {
     };
 
     try {
-      const url = process.env.EXPO_PUBLIC_BACKEND_BASE_URL + GENERATE_BILL;
+      const url = BACKEND_BASE_URL + GENERATE_BILL;
       const response = await axiosInstance.post(url, payload);
       Alert.alert("Success", "Bill generated successfully", [
         {

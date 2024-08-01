@@ -26,10 +26,7 @@ const UnitsList = () => {
       try {
         const { bill_name } = params;
         const url =
-          process.env.EXPO_PUBLIC_BACKEND_BASE_URL +
-          FETCH_UNIT_BILLS +
-          "?bill_name=" +
-          bill_name;
+          BACKEND_BASE_URL + FETCH_UNIT_BILLS + "?bill_name=" + bill_name;
         const response = await axiosInstance.get(url);
         setUnitsData(response.data.data);
       } catch (error) {

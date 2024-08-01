@@ -18,9 +18,7 @@ const ViewBills = () => {
     const fetchBills = async () => {
       try {
         const url =
-          process.env.EXPO_PUBLIC_BACKEND_BASE_URL +
-          VIEW_BILLS_GROUPED +
-          "/668ec76634a193bb66e98ead";
+          BACKEND_BASE_URL + VIEW_BILLS_GROUPED + "/668ec76634a193bb66e98ead";
         const response = await axiosInstance.get(url);
         console.log("response", response);
 

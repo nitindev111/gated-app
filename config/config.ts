@@ -1,3 +1,3 @@
-const BACKEND_BASE_URL: any = process.env?.EXPO_PUBLIC_BACKEND_BASE_URL;
+const BACKEND_BASE_URL: any = "http://gateup.in/api";
 
 export { BACKEND_BASE_URL };
