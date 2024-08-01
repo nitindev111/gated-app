@@ -18,6 +18,7 @@ import DateTimePicker, {
 import axiosInstance from "../utils/axiosInstance";
 import { GENERATE_BILL } from "@/constants/api.constants";
 import { useRouter } from "expo-router";
+import { BACKEND_BASE_URL } from "@/config/config";
 
 const GenerateBill = () => {
   const [name, setName] = useState("");

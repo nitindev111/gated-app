@@ -5,6 +5,7 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { RUPEE_SYMBOL } from "@/constants/others";
 import { useUser } from "../context/UserProvider";
 import { Picker } from "@react-native-picker/picker";
+import { BACKEND_BASE_URL } from "@/config/config";
 
 const Transactions = () => {
   const [loading, setLoading] = useState(false);

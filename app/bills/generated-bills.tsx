@@ -10,6 +10,7 @@ import axiosInstance from "../utils/axiosInstance";
 import { VIEW_BILLS_GROUPED } from "@/constants/api.constants";
 import { RUPEE_SYMBOL } from "@/constants/others";
 import { Link, router } from "expo-router";
+import { BACKEND_BASE_URL } from "@/config/config";
 
 const ViewBills = () => {
   const [billsData, setBillsData] = useState([]);

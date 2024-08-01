@@ -10,6 +10,7 @@ import axiosInstance from "../utils/axiosInstance";
 import { FETCH_UNIT_BILLS } from "@/constants/api.constants";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { RUPEE_SYMBOL } from "@/constants/others";
+import { BACKEND_BASE_URL } from "@/config/config";
 
 const UnitsList = () => {
   const [unitsData, setUnitsData] = useState([]);

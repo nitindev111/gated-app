@@ -4,6 +4,7 @@ import CheckBox from "expo-checkbox";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import axiosInstance from "@/app/utils/axiosInstance";
+import { BACKEND_BASE_URL } from "@/config/config";
 
 const PaidAmountDetails = () => {
   const router = useLocalSearchParams();

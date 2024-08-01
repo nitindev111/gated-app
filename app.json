@@ -1,20 +1,22 @@
 {
   "expo": {
-    "plugins": [
-      [
-        "expo-dev-launcher",
-        {
-          "launchMode": "most-recent"
-        }
-      ]
-    ],
+    "name": "Gate Up",
+    "slug": "gate-up",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/gateup.png",
+    "scheme": "com.nitindev54.gatedapp",
     "extra": {
+      "backendBaseUrl": "http://gateupin/api",
       "eas": {
-        "projectId": "1f35d9d6-0e95-49e8-86ce-abf98e85be62"
+        "projectId": "41e078f9-bc9f-4108-98b5-5716605e27cd"
       }
     },
     "android": {
       "package": "com.nitindev54.gatedapp"
-    }
+    },
+    "plugins": [
+      "expo-router"
+    ]
   }
 }
