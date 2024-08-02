@@ -1,3 +1,3 @@
-const BACKEND_BASE_URL: any = "http://gateup.in/api";
+const BACKEND_BASE_URL: any = "https://gateup.in/api";
 
 export { BACKEND_BASE_URL };
