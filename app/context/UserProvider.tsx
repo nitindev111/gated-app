@@ -5,12 +5,14 @@ interface UserContextType {
   user: any;
   setUser: (user: any) => void;
   clearUser: () => void;
+  loading: boolean;
 }
 
 const UserContext = createContext<UserContextType | null>(null);
 
 export const UserProvider: React.FC<any> = ({ children }) => {
   const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
   const clearUser = () => {
     console.log("Clearing user");
@@ -18,7 +20,11 @@ export const UserProvider: React.FC<any> = ({ children }) => {
   };
 
   useEffect(() => {
+    console.log("====================================");
+    console.log("use effect in user", user);
+    console.log("====================================");
     const fetchUser = async () => {
+      setLoading(true);
       try {
         const decodedToken = await getDecodedToken();
         console.log("User loaded from AsyncStorage:", decodedToken);
@@ -30,6 +36,8 @@ export const UserProvider: React.FC<any> = ({ children }) => {
       } catch (error) {
         console.error("Error retrieving token from AsyncStorage:", error);
         setUser(null);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -37,7 +45,7 @@ export const UserProvider: React.FC<any> = ({ children }) => {
   }, [user?.user_id]);
 
   return (
-    <UserContext.Provider value={{ user, setUser, clearUser }}>
+    <UserContext.Provider value={{ user, setUser, clearUser, loading }}>
       {children}
     </UserContext.Provider>
   );

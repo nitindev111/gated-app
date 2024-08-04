@@ -13,10 +13,9 @@
       }
     },
     "android": {
-      "package": "com.nitindev54.gatedapp"
+      "package": "com.nitindev54.gatedapp",
+      "permissions": []
     },
-    "plugins": [
-      "expo-router"
-    ]
+    "plugins": ["expo-router", "expo-build-properties"]
   }
 }

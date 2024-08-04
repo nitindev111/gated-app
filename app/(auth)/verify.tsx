@@ -14,7 +14,7 @@ const Verify = () => {
   const router = useRouter();
   const [otp, setotp] = useState<string>("");
   const storage = useAsyncStorage("gated_user");
-  const { setUser } = useUser();
+  const { setUser, loading, user } = useUser();
   const { orderId, phoneNumber } = useLocalSearchParams();
 
   const handleOTPSubmit = async () => {

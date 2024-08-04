@@ -5,34 +5,65 @@ import {
   ScrollView,
   TouchableOpacity,
   ActivityIndicator,
+  Alert,
 } from "react-native";
 import axiosInstance from "../utils/axiosInstance";
 import { VIEW_BILLS_GROUPED } from "@/constants/api.constants";
 import { RUPEE_SYMBOL } from "@/constants/others";
-import { Link, router } from "expo-router";
+import { Link } from "expo-router";
 import { BACKEND_BASE_URL } from "@/config/config";
+import { useUser } from "../context/UserProvider";
 
 const ViewBills = () => {
   const [billsData, setBillsData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { user } = useUser();
+
+  const fetchBills = async () => {
+    try {
+      const url =
+        BACKEND_BASE_URL + VIEW_BILLS_GROUPED + "/" + user?.society_id;
+      const response = await axiosInstance.get(url);
+      setBillsData(response.data);
+    } catch (error) {
+      console.error("Failed to fetch bills:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchBills = async () => {
-      try {
-        const url =
-          BACKEND_BASE_URL + VIEW_BILLS_GROUPED + "/668ec76634a193bb66e98ead";
-        const response = await axiosInstance.get(url);
-        console.log("response", response);
-
-        setBillsData(response.data);
-      } catch (error) {
-        console.error("Failed to fetch bills:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchBills();
   }, []);
+
+  const handleDeleteBills = async (bill_name: string) => {
+    try {
+      await axiosInstance.patch(`${BACKEND_BASE_URL}/bills/delete/by-name`, {
+        data: { bill_name },
+      });
+      fetchBills();
+    } catch (error) {
+      console.error("Failed to delete bills:", error);
+    }
+  };
+
+  const confirmDelete = (bill_name: string) => {
+    Alert.alert(
+      "Confirm Delete",
+      `Are you sure you want to delete all bills under '${bill_name}'?`,
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: () => handleDeleteBills(bill_name),
+        },
+      ]
+    );
+  };
 
   if (loading) {
     return (
@@ -44,8 +75,8 @@ const ViewBills = () => {
 
   return (
     <ScrollView className="flex-1 p-6 bg-white">
-      {billsData.map((billGroup: any, index) => (
-        <TouchableOpacity
+      {billsData.map((billGroup: any, index: number) => (
+        <View
           key={index}
           className="border border-gray-300 p-4 rounded-lg mb-4 bg-white shadow-sm"
         >
@@ -71,7 +102,13 @@ const ViewBills = () => {
               </Text>
             </View>
           </Link>
-        </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => confirmDelete(billGroup.bill_name)}
+            className="mt-2 bg-red-600 p-2 rounded-lg"
+          >
+            <Text className="text-white text-center">Delete All Bills</Text>
+          </TouchableOpacity>
+        </View>
       ))}
     </ScrollView>
   );
