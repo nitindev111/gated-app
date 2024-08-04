@@ -41,6 +41,9 @@ const Transactions = () => {
 
   const fetchAccounts = async () => {
     const url = `${BACKEND_BASE_URL}/accounts/view?society_id=${societyId}`;
+    console.log("====================================");
+    console.log("url", url);
+    console.log("====================================");
     try {
       const response = await axiosInstance.get(url);
       setAccounts(response.data);

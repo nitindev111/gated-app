@@ -94,8 +94,7 @@ const Home = () => {
   };
 
   const renderSectionCards = () => {
-    const sections =
-      user?.role === "ADMIN" ? HOME_SECTIONS_ADMIN : HOME_SECTIONS;
+    const sections = HOME_SECTIONS_ADMIN;
 
     const rows = [];
     for (let i = 0; i < sections.length; i += 2) {

@@ -40,12 +40,6 @@ export default function RootLayout() {
 }
 
 function AppStack() {
-  const { user } = useUser();
-
-  useEffect(() => {
-    console.log("Current User:", user); // Log the current user
-  }, [user]);
-
   return (
     <Stack>
       <Stack.Screen name="index" />
