@@ -5,7 +5,7 @@ import { router } from "expo-router";
 import * as jwtDecode from "jwt-decode";
 
 const axiosInstance = axios.create({
-  baseURL: "http://192.168.1.12:3000",
+  baseURL: "http://192.168.1.4:3000",
 });
 
 axiosInstance.interceptors.request.use(

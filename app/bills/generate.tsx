@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -19,6 +19,7 @@ import axiosInstance from "../utils/axiosInstance";
 import { GENERATE_BILL } from "@/constants/api.constants";
 import { useRouter } from "expo-router";
 import { BACKEND_BASE_URL } from "@/config/config";
+import { Picker } from "@react-native-picker/picker";
 
 const GenerateBill = () => {
   const [name, setName] = useState("");
@@ -30,8 +31,59 @@ const GenerateBill = () => {
   const [invoiceDate, setInvoiceDate] = useState(new Date());
   const [showPicker, setShowPicker] = useState({ type: "", visible: false });
   const [loading, setLoading] = useState(false);
+  const [category, setCategory] = useState("");
+  const [subCategory, setSubCategory] = useState("");
+  const [categories, setCategories] = useState([]);
+  const [subCategories, setSubCategories] = useState([]);
 
   const router = useRouter();
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  const fetchCategories = async () => {
+    try {
+      const response = await axiosInstance.get(
+        `${BACKEND_BASE_URL}/categories/fetchAll`
+      );
+      const incomeCategories = response.data.filter(
+        (category: any) => category.type === "INCOME"
+      );
+      setCategories(incomeCategories);
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    }
+  };
+
+  const validateForm = () => {
+    if (
+      !category ||
+      !subCategory ||
+      !billDurationFrom ||
+      !billDurationTo ||
+      !invoiceDate ||
+      !amount ||
+      !name ||
+      !dueDate
+    ) {
+      Alert.alert("Validation Error", "All fields are required.");
+      return false;
+    }
+    if (Number(amount) <= 0) {
+      Alert.alert("Validation Error", "Amount should be a positive number.");
+      return false;
+    }
+    return true;
+  };
+
+  const handleCategoryChange = (value: string) => {
+    setCategory(value);
+    const selectedCategory = categories.find(
+      (category: any) => category.name === value
+    );
+    setSubCategories(selectedCategory ? selectedCategory?.subcategories : []);
+  };
 
   const handleDateChange = (
     event: DateTimePickerEvent,
@@ -47,33 +99,37 @@ const GenerateBill = () => {
   };
 
   const handleGenerateBill = async () => {
-    setLoading(true);
-    const payload = {
-      bill_name: name,
-      description,
-      duration_from: billDurationFrom.toISOString(),
-      duration_to: billDurationTo.toISOString(),
-      due_date: dueDate.toISOString(),
-      invoice_date: invoiceDate.toISOString(),
-      generated_at: new Date(),
-      society_id: "668ec76634a193bb66e98ead",
-      amount,
-    };
+    if (validateForm()) {
+      setLoading(true);
+      const payload = {
+        bill_name: name?.trim(),
+        description,
+        duration_from: billDurationFrom.toISOString(),
+        duration_to: billDurationTo.toISOString(),
+        due_date: dueDate.toISOString(),
+        invoice_date: invoiceDate.toISOString(),
+        generated_at: new Date(),
+        society_id: "668ec76634a193bb66e98ead",
+        amount,
+        category,
+        sub_category: subCategory,
+      };
 
-    try {
-      const url = BACKEND_BASE_URL + GENERATE_BILL;
-      const response = await axiosInstance.post(url, payload);
-      Alert.alert("Success", "Bill generated successfully", [
-        {
-          text: "OK",
-          onPress: () => router.push("/bills/generated-bills"),
-        },
-      ]);
-    } catch (error: any) {
-      console.error("Error generating bill:", error.response.data);
-      Alert.alert("Error", "Failed to generate bill");
-    } finally {
-      setLoading(false);
+      try {
+        const url = BACKEND_BASE_URL + GENERATE_BILL;
+        const response = await axiosInstance.post(url, payload);
+        Alert.alert("Success", "Bill generated successfully", [
+          {
+            text: "OK",
+            onPress: () => router.push("/bills/generated-bills"),
+          },
+        ]);
+      } catch (error: any) {
+        console.error("Error generating bill:", error.response.data);
+        Alert.alert("Error", "Failed to generate bill");
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -90,15 +146,54 @@ const GenerateBill = () => {
           <View className="mb-6">
             <Text className="text-base font-semibold mb-2">Name</Text>
             <TextInput
+              autoFocus
               placeholder="Enter bill name"
               value={name}
               onChangeText={setName}
               className="border-gray-300 border-solid border p-2 rounded-lg shadow-sm"
             />
           </View>
+          <View className="border border-gray-300 rounded-lg mb-4">
+            <Picker
+              selectedValue={category}
+              onValueChange={handleCategoryChange}
+              className="h-10"
+            >
+              <Picker.Item label="Select Category" value="" />
+              {categories.map((category, index) => (
+                <Picker.Item
+                  key={index}
+                  label={category.name}
+                  value={category.name}
+                />
+              ))}
+            </Picker>
+          </View>
+          {subCategories.length > 0 && (
+            <>
+              <Text className="text-sm font-semibold mb-2">Sub Category</Text>
+              <View className="border border-gray-300 rounded-lg mb-4">
+                <Picker
+                  selectedValue={subCategory}
+                  onValueChange={setSubCategory}
+                  className="h-10"
+                >
+                  <Picker.Item label="Select Sub Category" value="" />
+                  {subCategories.map((subCategory, index) => (
+                    <Picker.Item
+                      key={index}
+                      label={subCategory}
+                      value={subCategory}
+                    />
+                  ))}
+                </Picker>
+              </View>
+            </>
+          )}
           <View className="mb-6">
             <Text className="text-base font-semibold mb-2">Base amount</Text>
             <TextInput
+              keyboardType="numeric"
               placeholder="Enter bill name"
               value={amount}
               onChangeText={setAmount}

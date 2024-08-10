@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, ScrollView, TouchableOpacity, Modal } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  Modal,
+  Image,
+  FlatList,
+} from "react-native";
 import axiosInstance from "../utils/axiosInstance";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { RUPEE_SYMBOL } from "@/constants/others";
@@ -23,6 +31,7 @@ const Transactions = () => {
     visible: false,
   });
   const [showAccountModal, setShowAccountModal] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
   const { user } = useUser();
   const societyId = user?.society_id;
 
@@ -41,9 +50,6 @@ const Transactions = () => {
 
   const fetchAccounts = async () => {
     const url = `${BACKEND_BASE_URL}/accounts/view?society_id=${societyId}`;
-    console.log("====================================");
-    console.log("url", url);
-    console.log("====================================");
     try {
       const response = await axiosInstance.get(url);
       setAccounts(response.data);
@@ -53,12 +59,12 @@ const Transactions = () => {
   };
 
   useEffect(() => {
-    fetchTransactions(); // Fetch all transactions initially
+    fetchTransactions();
     fetchAccounts();
   }, []);
 
   const handleApplyFilters = () => {
-    const filterParams: any = {};
+    const filterParams = {};
 
     if (filters.accountId) {
       filterParams.account_id = filters.accountId;
@@ -91,31 +97,76 @@ const Transactions = () => {
       createdAtTo: null,
       type: "",
     });
-    fetchTransactions(); // Fetch all transactions again with no filters
+    fetchTransactions();
     setShowFiltersModal(false);
   };
 
-  const renderTransactionCard = (transaction: any) => (
+  const renderTransactionCard = (transaction) => (
     <View
       key={transaction._id}
-      className="p-4 mb-4 bg-white shadow-lg rounded-lg"
+      className="p-3 mb-4 bg-white shadow-md rounded-lg border border-gray-200"
     >
-      <Text className="font-bold text-lg">
-        Amount: {RUPEE_SYMBOL + transaction.amount}
-      </Text>
-      <Text className="text-gray-600">
-        Date: {new Date(transaction.date).toLocaleString()}
-      </Text>
-      <Text className="text-gray-600">
-        Payment Method: {transaction.payment_method}
-      </Text>
-      <Text className="text-gray-600">Type: {transaction.type}</Text>
-      <Text className="text-gray-600">
-        Description: {transaction.description}
-      </Text>
-      <Text className="text-gray-600">
-        Created At: {new Date(transaction.createdAt).toLocaleString()}
-      </Text>
+      <View className="flex-row justify-between items-center mb-1">
+        <Text className="font-bold text-base">
+          {RUPEE_SYMBOL + transaction.amount}
+        </Text>
+        <Text className="text-gray-500 text-sm">
+          {new Date(transaction.date).toLocaleDateString()}
+        </Text>
+      </View>
+
+      <View className="mb-1">
+        <View className="flex-row justify-between items-center mb-1">
+          <Text className="text-gray-600 text-sm font-medium">
+            Payment Method:
+          </Text>
+          <Text className="text-gray-800 text-sm">
+            {transaction.payment_method}
+          </Text>
+        </View>
+        <View className="flex-row justify-between items-center mb-1">
+          <Text className="text-gray-600 text-sm font-medium">Type:</Text>
+          <Text
+            className={`text-${
+              transaction.type === "INCOME" ? "green" : "red"
+            }-600 text-sm`}
+          >
+            {transaction.type}
+          </Text>
+        </View>
+        <View className="flex-row justify-between items-center mb-1">
+          <Text className="text-gray-600 text-sm font-medium">
+            Description:
+          </Text>
+          <Text className="text-gray-800 text-sm">
+            {transaction.description}
+          </Text>
+        </View>
+        <View className="flex-row justify-between items-center">
+          <Text className="text-gray-600 text-sm font-medium">Created At:</Text>
+          <Text className="text-gray-800 text-sm">
+            {new Date(transaction.createdAt).toLocaleString()}
+          </Text>
+        </View>
+      </View>
+
+      {transaction.attachment_urls &&
+        transaction.attachment_urls.length > 0 && (
+          <View className="flex-row flex-wrap mt-2">
+            {transaction.attachment_urls.map((url, index) => (
+              <TouchableOpacity
+                key={index}
+                onPress={() => setSelectedImage(url)}
+                className="mr-1 mb-1"
+              >
+                <Image
+                  source={{ uri: url }}
+                  className="w-12 h-12 rounded-lg border border-gray-300 bg-gray-200 object-cover"
+                />
+              </TouchableOpacity>
+            ))}
+          </View>
+        )}
     </View>
   );
 
@@ -123,6 +174,16 @@ const Transactions = () => {
     return (
       <View className="flex-1 justify-center items-center">
         <Text>Loading...</Text>
+      </View>
+    );
+  }
+
+  if (transactions.length === 0) {
+    return (
+      <View className="flex-1 justify-center items-center p-6 bg-white">
+        <Text className="text-lg text-gray-600">
+          No Transactions to display
+        </Text>
       </View>
     );
   }
@@ -146,7 +207,7 @@ const Transactions = () => {
         visible={showFiltersModal}
         animationType="slide"
         transparent={true}
-        onRequestClose={() => setShowFiltersModal(false)} // Handles back button press on Android
+        onRequestClose={() => setShowFiltersModal(false)}
       >
         <View className="flex-1 justify-center items-center bg-black bg-opacity-50">
           <View className="bg-white p-6 rounded-lg w-3/4">
@@ -158,7 +219,7 @@ const Transactions = () => {
               <Text>
                 {filters.accountId
                   ? accounts.find(
-                      (account: any) => account._id === filters.accountId
+                      (account) => account._id === filters.accountId
                     )?.label
                   : "Select Account"}
               </Text>
@@ -239,10 +300,29 @@ const Transactions = () => {
       )}
 
       <Modal
+        visible={!!selectedImage}
+        transparent={false}
+        onRequestClose={() => setSelectedImage(null)}
+      >
+        <View className="flex-1 justify-center items-center bg-black bg-opacity-80">
+          <TouchableOpacity
+            onPress={() => setSelectedImage(null)}
+            className="absolute top-4 right-4 p-2"
+          >
+            <Text className="text-white text-lg">Close</Text>
+          </TouchableOpacity>
+          <Image
+            source={{ uri: selectedImage || "" }}
+            className="w-full h-[80vh] object-contain"
+          />
+        </View>
+      </Modal>
+
+      <Modal
         visible={showAccountModal}
         animationType="slide"
         transparent={true}
-        onRequestClose={() => setShowAccountModal(false)} // Handles back button press on Android
+        onRequestClose={() => setShowAccountModal(false)}
       >
         <View className="flex-1 justify-center items-center bg-black bg-opacity-50">
           <View className="bg-white p-6 rounded-lg w-3/4">

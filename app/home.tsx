@@ -45,7 +45,7 @@ const HOME_SECTIONS_ADMIN = [
   },
   {
     name: "Members",
-    path: "members",
+    path: "/members",
     icon: "play",
   },
   {

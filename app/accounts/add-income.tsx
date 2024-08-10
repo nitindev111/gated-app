@@ -1,30 +1,35 @@
+import { BACKEND_BASE_URL } from "@/config/config";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import { Picker } from "@react-native-picker/picker";
 import React, { useEffect, useState } from "react";
 import {
-  View,
+  ActivityIndicator,
+  Alert,
+  ScrollView,
   Text,
   TextInput,
   TouchableOpacity,
-  ScrollView,
-  ActivityIndicator,
-  Alert,
+  View,
 } from "react-native";
 import axiosInstance from "../utils/axiosInstance";
-import { Picker } from "@react-native-picker/picker";
-import DateTimePicker from "@react-native-community/datetimepicker";
-import { BACKEND_BASE_URL } from "@/config/config";
+import FileUpload from "../components/common/FileUpload";
 
 const AddIncome = ({ societyId = "668ec76634a193bb66e98ead" }) => {
-  const [categories, setCategories] = useState(["Electricity", "Salary"]);
+  const [categories, setCategories] = useState([]);
+  const [subCategories, setSubCategories] = useState([]);
   const [accounts, setAccounts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [form, setForm] = useState({
     category: "",
+    sub_category: "",
     account_id: "",
     description: "",
     amount: "",
     date: new Date(),
     payment_method: "",
     type: "INCOME",
+    attachment_urls: [""],
+    transaction_ref_number: "",
   });
   const [showDatePicker, setShowDatePicker] = useState(false);
 
@@ -40,22 +45,52 @@ const AddIncome = ({ societyId = "668ec76634a193bb66e98ead" }) => {
       }
     };
 
+    const fetchCategories = async () => {
+      try {
+        const response = await axiosInstance.get(
+          `${BACKEND_BASE_URL}/categories/fetchAll`
+        );
+        const incomeCategories = response.data.filter(
+          (category: any) => category.type === "INCOME"
+        );
+        setCategories(incomeCategories);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    };
+
     const fetchData = async () => {
       setLoading(true);
       await fetchAccounts();
+      await fetchCategories();
       setLoading(false);
     };
 
     fetchData();
   }, [societyId]);
 
+  const handleUploadSuccess = (url: string) => {
+    const urls = [];
+    urls.push(url);
+    console.log("urls", urls);
+
+    setForm({ ...form, attachment_urls: urls });
+  };
+
   const handleInputChange = (field: string, value: any) => {
     setForm({ ...form, [field]: value });
+    if (field === "category") {
+      const selectedCategory = categories.find(
+        (category) => category.name === value
+      );
+      setSubCategories(selectedCategory ? selectedCategory.subcategories : []);
+    }
   };
 
   const validateForm = () => {
     if (
       !form.category ||
+      !form.sub_category ||
       !form.account_id ||
       !form.description ||
       !form.amount ||
@@ -79,30 +114,34 @@ const AddIncome = ({ societyId = "668ec76634a193bb66e98ead" }) => {
       const url = `${BACKEND_BASE_URL}/income/create`;
       const data = {
         category: form.category,
+        sub_category: form.sub_category,
         account_id: form.account_id,
         description: form.description,
         amount: form.amount,
         date: form.date.toISOString(),
         payment_method: form.payment_method,
         type: "INCOME",
+        attachment_urls: form.attachment_urls,
+        transaction_ref_number: form.transaction_ref_number,
       };
-      console.log("DATA", data);
 
       const response = await axiosInstance.post(url, data);
-      console.log("Income recorded successfully:", response.data);
       Alert.alert("Success", "Income recorded successfully.");
       // Reset form
       setForm({
         category: "",
+        sub_category: "",
         account_id: "",
         description: "",
         amount: "",
         date: new Date(),
         payment_method: "",
         type: "INCOME",
+        attachment_urls: [],
+        transaction_ref_number: "",
       });
     } catch (error) {
-      console.error("Error recording income:", error.response.data);
+      console.error("Error recording income:", error.response?.data || error);
       Alert.alert("Error", "Failed to record income. Please try again.");
     }
   };
@@ -131,24 +170,38 @@ const AddIncome = ({ societyId = "668ec76634a193bb66e98ead" }) => {
           >
             <Picker.Item label="Select Category" value="" />
             {categories.map((category, index) => (
-              <Picker.Item key={index} label={category} value={category} />
+              <Picker.Item
+                key={index}
+                label={category.name}
+                value={category.name}
+              />
             ))}
           </Picker>
         </View>
-        <View className="border border-gray-300 rounded-lg mb-4">
-          <Picker
-            selectedValue={form.payment_method}
-            onValueChange={(value) =>
-              handleInputChange("payment_method", value)
-            }
-            className="h-10"
-          >
-            <Picker.Item label="Select Payment Method" value="" />
-            {["Online", "Cash"].map((method, index) => (
-              <Picker.Item key={index} label={method} value={method} />
-            ))}
-          </Picker>
-        </View>
+
+        {subCategories.length > 0 && (
+          <>
+            <Text className="text-sm font-semibold mb-2">Sub Category</Text>
+            <View className="border border-gray-300 rounded-lg mb-4">
+              <Picker
+                selectedValue={form.sub_category}
+                onValueChange={(value) =>
+                  handleInputChange("sub_category", value)
+                }
+                className="h-10"
+              >
+                <Picker.Item label="Select Sub Category" value="" />
+                {subCategories.map((subCategory, index) => (
+                  <Picker.Item
+                    key={index}
+                    label={subCategory}
+                    value={subCategory}
+                  />
+                ))}
+              </Picker>
+            </View>
+          </>
+        )}
 
         <Text className="text-sm font-semibold mb-2">Payment Account</Text>
         <View className="border border-gray-300 rounded-lg mb-4">
@@ -168,13 +221,21 @@ const AddIncome = ({ societyId = "668ec76634a193bb66e98ead" }) => {
           </Picker>
         </View>
 
-        <Text className="text-sm font-semibold mb-2">Description</Text>
-        <TextInput
-          value={form.description}
-          onChangeText={(text) => handleInputChange("description", text)}
-          placeholder="Description"
-          className="mb-4 border border-gray-300 rounded-lg p-2"
-        />
+        <Text className="text-sm font-semibold mb-2">Payment Method</Text>
+        <View className="border border-gray-300 rounded-lg mb-4">
+          <Picker
+            selectedValue={form.payment_method}
+            onValueChange={(value) =>
+              handleInputChange("payment_method", value)
+            }
+            className="h-10"
+          >
+            <Picker.Item label="Select Payment Method" value="" />
+            <Picker.Item value="CASH" label="Online (net banking, upi etc)" />
+            <Picker.Item value="CASH" label="Cash" />
+            <Picker.Item value="CHECK" label="Check" />
+          </Picker>
+        </View>
 
         <Text className="text-sm font-semibold mb-2">Amount</Text>
         <TextInput
@@ -184,7 +245,6 @@ const AddIncome = ({ societyId = "668ec76634a193bb66e98ead" }) => {
           keyboardType="numeric"
           className="mb-4 border border-gray-300 rounded-lg p-2"
         />
-
         <Text className="text-sm font-semibold mb-2">Transaction Date</Text>
         <TouchableOpacity
           onPress={() => setShowDatePicker(true)}
@@ -192,7 +252,25 @@ const AddIncome = ({ societyId = "668ec76634a193bb66e98ead" }) => {
         >
           <Text>{form.date.toDateString()}</Text>
         </TouchableOpacity>
+        <TextInput
+          value={form.transaction_ref_number}
+          onChangeText={(text) =>
+            handleInputChange("transaction_ref_number", text)
+          }
+          placeholder="UPI/Transaction/Check number"
+          className="mb-4 border border-gray-300 rounded-lg p-2"
+        />
+        <Text className="text-sm font-semibold mb-2">Description</Text>
+        <TextInput
+          value={form.description}
+          onChangeText={(text) => handleInputChange("description", text)}
+          placeholder="Description"
+          className="mb-4 border border-gray-300 rounded-lg p-2"
+        />
 
+        <View className="flex-1 justify-center items-center">
+          <FileUpload onUploadSuccess={handleUploadSuccess} />
+        </View>
         {showDatePicker && (
           <DateTimePicker
             value={form.date}

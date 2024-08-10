@@ -12,6 +12,10 @@ import axiosInstance from "../utils/axiosInstance";
 import { useLocalSearchParams, useNavigation } from "expo-router";
 import { RUPEE_SYMBOL } from "@/constants/others";
 import { BACKEND_BASE_URL } from "@/config/config";
+import DateTimePicker from "@react-native-community/datetimepicker"; // import DatePicker component
+import { Picker } from "@react-native-picker/picker";
+import { useUser } from "../context/UserProvider";
+import FileUpload from "../components/common/FileUpload";
 
 const ViewBill = () => {
   const [loading, setLoading] = useState(false);
@@ -19,15 +23,19 @@ const ViewBill = () => {
   const [bill, setBill] = useState<any>(null);
   const [accounts, setAccounts] = useState([]);
   const [showBottomSheet, setShowBottomSheet] = useState(false);
-  const [showAccountModal, setShowAccountModal] = useState(false);
   const navigation = useNavigation();
+  const [showDatePicker, setShowDatePicker] = useState(false);
   const [paymentDetails, setPaymentDetails] = useState({
     account_id: "",
     date: new Date(),
     voucherCode: "",
-    paymentMode: "online",
+    paymentMode: "",
     description: "",
+    transaction_ref_number: "",
+    attachment_urls: [""],
   });
+
+  const { user } = useUser();
 
   const fetchBill = async () => {
     setLoading(true);
@@ -45,7 +53,7 @@ const ViewBill = () => {
   const fetchAccounts = async () => {
     try {
       const response = await axiosInstance.get(
-        `${BACKEND_BASE_URL}/accounts/view?society_id=668ec76634a193bb66e98ead`
+        `${BACKEND_BASE_URL}/accounts/view?society_id=${user?.society_id}`
       );
       setAccounts(response.data);
     } catch (error) {
@@ -69,7 +77,7 @@ const ViewBill = () => {
     });
   }, [navigation, bill]);
 
-  const handlePaymentDetailsChange = (field: string, value: string) => {
+  const handlePaymentDetailsChange = (field: string, value: any) => {
     setPaymentDetails({ ...paymentDetails, [field]: value });
   };
 
@@ -80,6 +88,16 @@ const ViewBill = () => {
       return false;
     }
     return true;
+  };
+
+  const handleUploadSuccess = (url: string) => {
+    const urls = [];
+    urls.push(url);
+    console.log("urls", urls);
+    setPaymentDetails({
+      ...paymentDetails,
+      attachment_urls: urls,
+    });
   };
 
   const handleMarkAsPaid = async () => {
@@ -96,6 +114,8 @@ const ViewBill = () => {
           voucherCode: paymentDetails.voucherCode,
           payment_method: paymentDetails.paymentMode,
           description: paymentDetails.description,
+          transaction_ref_number: paymentDetails.transaction_ref_number,
+          attachment_urls: paymentDetails.attachment_urls,
         },
       };
 
@@ -109,6 +129,107 @@ const ViewBill = () => {
     }
   };
 
+  const renderMarkAsPaidModal = () => {
+    return (
+      <Modal
+        visible={showBottomSheet}
+        animationType="slide"
+        transparent={false}
+      >
+        <View className="flex-1 bg-white p-6 gap-2">
+          <Text className="text-lg font-bold mb-4">Mark as Paid</Text>
+          <View className="border border-gray-300 rounded-lg">
+            <Picker
+              selectedValue={paymentDetails.account_id}
+              onValueChange={(value) =>
+                handlePaymentDetailsChange("account_id", value)
+              }
+            >
+              <Picker.Item label="Select Payment Account" value="" />
+              {accounts.map((acc: any) => {
+                return <Picker.Item label={acc?.label} value={acc?._id} />;
+              })}
+            </Picker>
+          </View>
+
+          <TouchableOpacity
+            onPress={() => setShowDatePicker(true)}
+            className="border-gray-300 border-solid border border-1 p-2 rounded-lg "
+          >
+            <Text>{paymentDetails.date.toDateString()}</Text>
+          </TouchableOpacity>
+
+          {showDatePicker && (
+            <View className="border border-gray-300 rounded-lg">
+              <DateTimePicker
+                value={paymentDetails.date}
+                mode="date"
+                display="default"
+                onChange={(event, selectedDate) => {
+                  setShowDatePicker(false);
+                  if (selectedDate) {
+                    handlePaymentDetailsChange("date", selectedDate);
+                  }
+                }}
+              />
+            </View>
+          )}
+
+          <View className="border border-gray-300 rounded-lg">
+            <Picker
+              selectedValue={paymentDetails.paymentMode}
+              onValueChange={(value) =>
+                handlePaymentDetailsChange("paymentMode", value)
+              }
+            >
+              <Picker.Item label="Select Payment Mode" value="" />
+              <Picker.Item
+                label="Online (UPI, Bank Transfer, etc)"
+                value="ONLINE"
+              />
+              <Picker.Item label="Cash" value="CASH" />
+              <Picker.Item label="Check" value="CHECK" />
+            </Picker>
+          </View>
+          <TextInput
+            placeholder="Description"
+            value={paymentDetails.description}
+            onChangeText={(text) =>
+              handlePaymentDetailsChange("description", text)
+            }
+            className="border-gray-300 border-solid border border-1 p-2 rounded-lg mb-4"
+          />
+          <TextInput
+            placeholder="Transaction Ref Number (Optional)"
+            value={paymentDetails.transaction_ref_number}
+            onChangeText={(text) =>
+              handlePaymentDetailsChange("transaction_ref_number", text)
+            }
+            className="border-gray-300 border-solid border border-1 p-2 rounded-lg mb-4"
+          />
+
+          <View className="flex-1 justify-center items-center">
+            <FileUpload onUploadSuccess={handleUploadSuccess} />
+          </View>
+          <View className="flex flex-row items-center gap-2">
+            <TouchableOpacity
+              onPress={handleMarkAsPaid}
+              className="flex-1 bg-blue-500 p-4 rounded-lg"
+            >
+              <Text className="text-white text-center">Submit</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => setShowBottomSheet(false)}
+              className="flex-1 bg-red-700 p-4 rounded-lg"
+            >
+              <Text className="text-white text-center">Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+    );
+  };
+
   if (loading || !bill) {
     return (
       <View className="flex-1 justify-center items-center">
@@ -118,136 +239,112 @@ const ViewBill = () => {
   }
 
   return (
-    <View className="flex-1 bg-white">
-      <ScrollView className="flex-1 p-6">
-        <Text className="text-lg font-bold mb-4">{bill?.bill_name}</Text>
-        <Text className="text-sm text-gray-600 mb-2">
-          Amount: {RUPEE_SYMBOL + bill?.amount}
-        </Text>
-        <Text className="text-sm text-gray-600 mb-2">
-          Due Date: {new Date(bill?.due_date).toLocaleDateString()}
-        </Text>
-        <Text className="text-sm text-gray-600 mb-2">
-          Status: {bill?.status}
-        </Text>
-        <Text className="text-sm text-gray-600 mb-2">
-          Description: {bill?.description}
-        </Text>
+    <View className="flex-1 bg-white p-4">
+      <ScrollView className="flex-1">
+        {/* Bill Information Section */}
+        <View className="mb-6 border-b border-gray-200 pb-4">
+          <Text className="text-base font-bold mb-2">{bill?.bill_name}</Text>
+          <Text className="text-xs text-gray-600">
+            Invoice Number: {bill?.invoice_number}
+          </Text>
+        </View>
+
+        {/* Amount and Due Date Section */}
+        <View className="mb-6 flex flex-row justify-between">
+          <View className="flex-1 mr-4">
+            <Text className="text-sm text-gray-600 font-bold mb-1">Amount</Text>
+            <Text className="text-sm text-gray-800">
+              {RUPEE_SYMBOL + bill?.amount}
+            </Text>
+          </View>
+          <View className="flex-1">
+            <Text className="text-sm text-gray-600 font-bold mb-1">
+              Due Date
+            </Text>
+            <Text className="text-sm text-gray-800">
+              {new Date(bill?.due_date).toLocaleDateString()}
+            </Text>
+          </View>
+        </View>
+
+        {/* Status Section */}
+        <View className="mb-6 border-b border-gray-200 pb-4">
+          <View className="flex flex-row justify-between">
+            <View className="flex-1 mr-4">
+              <Text className="text-sm text-gray-600 font-bold mb-1">
+                Payment Status
+              </Text>
+              <Text
+                className={`text-sm ${
+                  bill?.status === "PAID"
+                    ? "text-green-600 font-bold"
+                    : bill?.status === "UNPAID"
+                    ? "text-red-600 font-bold"
+                    : "text-yellow-600 font-bold"
+                }`}
+              >
+                {bill?.status}
+              </Text>
+            </View>
+            <View className="flex-1">
+              <Text className="text-sm text-gray-600 font-bold mb-1">
+                Verification Status
+              </Text>
+              <Text
+                className={`text-sm ${
+                  bill?.verification_status === "APPROVED"
+                    ? "text-green-600 font-bold"
+                    : "text-yellow-600 font-bold"
+                }`}
+              >
+                {bill?.verification_status}
+              </Text>
+            </View>
+          </View>
+        </View>
+
+        {/* Category and Subcategory Section */}
+        <View className="mb-6 border-b border-gray-200 pb-4">
+          <Text className="text-sm text-gray-600 font-bold mb-1">Category</Text>
+          <Text className="text-sm text-gray-800">{bill?.category}</Text>
+          <Text className="text-sm text-gray-600 font-bold mt-2">
+            Subcategory
+          </Text>
+          <Text className="text-sm text-gray-800">{bill?.sub_category}</Text>
+        </View>
+
+        {/* Description Section */}
+        <View className="mb-6 border-b border-gray-200 pb-4">
+          <Text className="text-sm text-gray-600 font-bold mb-1">
+            Description
+          </Text>
+          <Text className="text-sm text-gray-800">{bill?.description}</Text>
+        </View>
+
+        {/* Invoice Date Section */}
+        <View className="mb-6">
+          <Text className="text-sm text-gray-600 font-bold mb-1">
+            Invoice Date
+          </Text>
+          <Text className="text-sm text-gray-800">
+            {new Date(bill?.invoice_date).toLocaleDateString()}
+          </Text>
+        </View>
       </ScrollView>
+
+      {/* Action Button Section */}
       {(bill?.status !== "PAID" || bill.verification_status !== "APPROVED") && (
-        <View className="p-6 border-t border-gray-200 bg-white">
+        <View className="p-4 border-t border-gray-200 bg-white">
           <TouchableOpacity
             onPress={() => setShowBottomSheet(true)}
-            className="bg-blue-500 p-4 rounded-lg"
+            className="bg-blue-500 p-3 rounded-lg"
           >
-            <Text className="text-white text-center">Mark as Paid</Text>
+            <Text className="text-white text-center text-sm">Mark as Paid</Text>
           </TouchableOpacity>
         </View>
       )}
 
-      <Modal
-        visible={showBottomSheet}
-        animationType="slide"
-        transparent={false}
-      >
-        <View className="flex-1 bg-white p-6">
-          <Text className="text-lg font-bold mb-4">Mark as Paid</Text>
-          <TouchableOpacity
-            onPress={() => setShowAccountModal(true)}
-            className="border-gray-300 border-solid border border-1 p-2 rounded-lg mb-4"
-          >
-            <Text>
-              {paymentDetails.account_id
-                ? paymentDetails.account_id
-                : "Select Account"}
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() =>
-              handlePaymentDetailsChange(
-                "date",
-                new Date().toLocaleTimeString()
-              )
-            }
-            className="border-gray-300 border-solid border border-1 p-2 rounded-lg mb-4"
-          >
-            <Text>{paymentDetails?.date?.toDateString()}</Text>
-          </TouchableOpacity>
-          <TextInput
-            placeholder="Voucher Code"
-            value={paymentDetails.voucherCode}
-            onChangeText={(text) =>
-              handlePaymentDetailsChange("voucherCode", text)
-            }
-            className="border-gray-300 border-solid border border-1 p-2 rounded-lg mb-4"
-          />
-          <TextInput
-            placeholder="Payment Mode (Online or Cash)"
-            value={paymentDetails.paymentMode}
-            onChangeText={(text) =>
-              handlePaymentDetailsChange("paymentMode", text)
-            }
-            className="border-gray-300 border-solid border border-1 p-2 rounded-lg mb-4"
-          />
-          <TextInput
-            placeholder="Description"
-            value={paymentDetails.description}
-            onChangeText={(text) =>
-              handlePaymentDetailsChange("description", text)
-            }
-            className="border-gray-300 border-solid border border-1 p-2 rounded-lg mb-4"
-          />
-          <View className="flex flex-row gap-2 items-center w-full">
-            <TouchableOpacity
-              onPress={handleMarkAsPaid}
-              className="w-[50%] bg-blue-500 p-4 rounded-lg"
-            >
-              <Text className="text-white text-center">Submit</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => setShowBottomSheet(false)}
-              className="w-[50%] bg-red-700 p-4 rounded-lg"
-            >
-              <Text className="text-white text-center">Cancel</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
-
-      <Modal
-        visible={showAccountModal}
-        animationType="slide"
-        transparent={true}
-      >
-        <View className="flex-1 justify-center items-center bg-black bg-opacity-50">
-          <View className="bg-white p-6 rounded-lg w-3/4">
-            <ScrollView className="mb-4">
-              {accounts.map((account: any) => (
-                <TouchableOpacity
-                  key={account._id}
-                  onPress={() => {
-                    handlePaymentDetailsChange("account_id", account._id);
-                    setShowAccountModal(false);
-                  }}
-                  className={`border-gray-300 border-solid border border-1 p-2 rounded-lg mb-2 ${
-                    paymentDetails.account_id === account._id
-                      ? "bg-blue-100"
-                      : ""
-                  }`}
-                >
-                  <Text>{account.label}</Text>
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
-            <TouchableOpacity
-              onPress={() => setShowAccountModal(false)}
-              className="bg-red-700 p-4 rounded-lg"
-            >
-              <Text className="text-white text-center">Cancel</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
+      {renderMarkAsPaidModal()}
     </View>
   );
 };

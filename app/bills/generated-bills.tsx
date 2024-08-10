@@ -20,10 +20,13 @@ const ViewBills = () => {
   const { user } = useUser();
 
   const fetchBills = async () => {
+    setLoading(true);
     try {
       const url =
         BACKEND_BASE_URL + VIEW_BILLS_GROUPED + "/" + user?.society_id;
       const response = await axiosInstance.get(url);
+      console.log("response", response);
+
       setBillsData(response.data);
     } catch (error) {
       console.error("Failed to fetch bills:", error);
@@ -37,6 +40,7 @@ const ViewBills = () => {
   }, []);
 
   const handleDeleteBills = async (bill_name: string) => {
+    setLoading(true);
     try {
       await axiosInstance.patch(`${BACKEND_BASE_URL}/bills/delete/by-name`, {
         data: { bill_name },
@@ -44,6 +48,8 @@ const ViewBills = () => {
       fetchBills();
     } catch (error) {
       console.error("Failed to delete bills:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -73,12 +79,20 @@ const ViewBills = () => {
     );
   }
 
+  if (billsData.length === 0) {
+    return (
+      <View className="flex-1 justify-center items-center p-6 bg-white">
+        <Text className="text-lg text-gray-600">No bills to display</Text>
+      </View>
+    );
+  }
+
   return (
-    <ScrollView className="flex-1 p-6 bg-white">
+    <ScrollView className="flex-1 p-6 bg-gray-100">
       {billsData.map((billGroup: any, index: number) => (
         <View
           key={index}
-          className="border border-gray-300 p-4 rounded-lg mb-4 bg-white shadow-sm"
+          className="border border-gray-300 p-4 rounded-lg mb-4 bg-white shadow-lg"
         >
           <Link
             href={{
@@ -87,7 +101,7 @@ const ViewBills = () => {
             }}
           >
             <View>
-              <Text className="text-lg font-bold mb-2">
+              <Text className="text-lg font-bold mb-2 text-blue-800">
                 {billGroup.bill_name}
               </Text>
               <Text className="text-sm text-gray-600 mb-2">
@@ -104,9 +118,11 @@ const ViewBills = () => {
           </Link>
           <TouchableOpacity
             onPress={() => confirmDelete(billGroup.bill_name)}
-            className="mt-2 bg-red-600 p-2 rounded-lg"
+            className="mt-4 bg-red-600 p-3 rounded-full shadow-md"
           >
-            <Text className="text-white text-center">Delete All Bills</Text>
+            <Text className="text-white text-center font-semibold">
+              Delete All Bills
+            </Text>
           </TouchableOpacity>
         </View>
       ))}
