@@ -13,10 +13,10 @@ const ManageBills = () => {
     <View className="flex-1 p-6 bg-gray-100">
       <TouchableOpacity
         className="bg-green-500 m-4 p-6 rounded-lg shadow-md"
-        onPress={() => handleSectionClick("accounts/balance")}
+        onPress={() => handleSectionClick("accounts/list")}
       >
         <Text className="text-lg font-bold text-white text-center">
-          Balance
+          Accounts
         </Text>
       </TouchableOpacity>
       <TouchableOpacity

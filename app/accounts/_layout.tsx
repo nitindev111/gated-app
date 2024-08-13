@@ -12,7 +12,7 @@ export default function AuthLayout() {
         }}
       >
         <Stack.Screen
-          name="balance"
+          name="list"
           options={{
             headerShown: false,
           }}

@@ -13,8 +13,10 @@ import { Picker } from "@react-native-picker/picker";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { BACKEND_BASE_URL } from "@/config/config";
 import FileUpload from "../components/common/FileUpload";
+import { useRouter } from "expo-router";
 
 const AddExpense = ({ societyId = "668ec76634a193bb66e98ead" }) => {
+  const router = useRouter();
   const [categories, setCategories] = useState(["Electricity", "Salary"]);
   const [accounts, setAccounts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -141,6 +143,7 @@ const AddExpense = ({ societyId = "668ec76634a193bb66e98ead" }) => {
         attachment_urls: [],
         transaction_ref_number: "",
       });
+      router.replace("/accounts/transactions");
     } catch (error) {
       console.error("Error recording expense:", error.response.data);
       Alert.alert("Error", "Failed to record expense. Please try again.");

@@ -121,16 +121,33 @@ const GenerateBill = () => {
         Alert.alert("Success", "Bill generated successfully", [
           {
             text: "OK",
-            onPress: () => router.push("/bills/generated-bills"),
+            onPress: () => {
+              resetForm();
+              router.push("/bills/generated-bills");
+            },
           },
         ]);
       } catch (error: any) {
         console.error("Error generating bill:", error.response.data);
-        Alert.alert("Error", "Failed to generate bill");
+        Alert.alert(
+          "Error",
+          error?.response?.data?.message || "Failed to generate Bills"
+        );
       } finally {
         setLoading(false);
       }
     }
+  };
+
+  const resetForm = () => {
+    setCategory("");
+    setName("");
+    setSubCategory(""), setAmount("");
+    setDescription("");
+    setBillDurationFrom(new Date());
+    setBillDurationTo(new Date());
+    setDueDate(new Date());
+    setInvoiceDate(new Date());
   };
 
   return (
