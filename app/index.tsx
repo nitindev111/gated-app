@@ -9,7 +9,6 @@ import { StatusBar } from "expo-status-bar";
 import { useFocusEffect, router } from "expo-router";
 import { useTheme } from "react-native-paper";
 import images from "@/constants/images";
-import CustomButton from "./components/CustomButton";
 import useAuthRedirect from "./hooks/useAuthRedirect";
 import { UserProvider } from "./context/UserProvider";
 import Button from "./components/common/Button";
@@ -47,13 +46,13 @@ const AppContent = () => {
     <SafeAreaView className="bg-white h-full">
       <GestureHandlerRootView>
         <ScrollView contentContainerStyle={{ height: "100%" }}>
-          <View className="w-full items-center justify-start h-full px-4">
+          <View className="flex-column flex-1 items-center justify-center gap-2">
             <Image
               source={images.gateup}
-              className="w-[380px] h-[300px]"
-              resizeMode="cover"
+              className="w-[300px] h-[300px]"
+              resizeMode="contain"
             />
-            <View className="pt-2">
+            <View className="">
               <Button
                 title="Continue with mobile number"
                 disabled={false}

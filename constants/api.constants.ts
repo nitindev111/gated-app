@@ -1,5 +1,6 @@
 export const VERIFY_OTP = "/auth/verify-otp";
 export const SEND_OTP = "/auth/send-otp";
+export const RESEND_OTP = "/auth/resend-otp";
 
 // Bills
 export const GENERATE_BILL = "/bills/generate";

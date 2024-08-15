@@ -116,6 +116,7 @@ const AddExpense = ({ societyId = "668ec76634a193bb66e98ead" }) => {
       const url = `${BACKEND_BASE_URL}/expense/create`;
       const data = {
         category: form.category,
+        sub_category: form.sub_category,
         account_id: form.account_id,
         description: form.description,
         amount: form.amount,
@@ -296,7 +297,7 @@ const AddExpense = ({ societyId = "668ec76634a193bb66e98ead" }) => {
       </ScrollView>
       <TouchableOpacity
         onPress={handleSubmit}
-        className="bg-blue-500 p-4 rounded-lg absolute bottom-0 left-0 right-0"
+        className="bg-primary p-4 rounded-lg absolute bottom-0 left-0 right-0"
       >
         <Text className="text-white text-center font-bold">Submit</Text>
       </TouchableOpacity>

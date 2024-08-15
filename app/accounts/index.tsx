@@ -1,6 +1,31 @@
 import React from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
+import { FontAwesome } from "@expo/vector-icons";
+import { Colors } from "@/constants/Colors";
+
+const ACCOUNT_SECTIONS = [
+  {
+    name: "Accounts",
+    icon: "users",
+    path: "/accounts/list",
+  },
+  {
+    name: "Transactions",
+    icon: "users",
+    path: "/accounts/transactions",
+  },
+  {
+    name: "Income",
+    icon: "money",
+    path: "/accounts/add-income",
+  },
+  {
+    name: "Expense",
+    icon: "money",
+    path: "/accounts/add-expense",
+  },
+];
 
 const ManageBills = () => {
   const router = useRouter();
@@ -10,39 +35,24 @@ const ManageBills = () => {
   };
 
   return (
-    <View className="flex-1 p-6 bg-gray-100">
-      <TouchableOpacity
-        className="bg-green-500 m-4 p-6 rounded-lg shadow-md"
-        onPress={() => handleSectionClick("accounts/list")}
-      >
-        <Text className="text-lg font-bold text-white text-center">
-          Accounts
-        </Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        className="bg-green-500 m-4 p-6 rounded-lg shadow-md"
-        onPress={() => handleSectionClick("accounts/add-income")}
-      >
-        <Text className="text-lg font-bold text-white text-center">
-          Add Income
-        </Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        className="bg-green-500 m-4 p-6 rounded-lg shadow-md"
-        onPress={() => handleSectionClick("accounts/add-expense")}
-      >
-        <Text className="text-lg font-bold text-white text-center">
-          Add Expense
-        </Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        className="bg-green-500 m-4 p-6 rounded-lg shadow-md"
-        onPress={() => handleSectionClick("accounts/transactions")}
-      >
-        <Text className="text-lg font-bold text-white text-center">
-          Transactions
-        </Text>
-      </TouchableOpacity>
+    <View className="flex-1 bg-gray-100">
+      <View className="flex-row justify-around p-4">
+        {ACCOUNT_SECTIONS.map((section: any, index) => {
+          return (
+            <TouchableOpacity
+              className=" mt-4 rounded-lg shadow-md flex items-center"
+              onPress={() => handleSectionClick(section.path)}
+            >
+              <FontAwesome
+                name={section.icon}
+                size={30}
+                color={Colors.light.primary}
+              />
+              <Text className="text-sm text-center">{section.name}</Text>
+            </TouchableOpacity>
+          );
+        })}
+      </View>
     </View>
   );
 };

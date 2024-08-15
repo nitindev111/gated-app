@@ -109,7 +109,7 @@ const UnitsList = () => {
               </Text>
               <Text
                 className={`text-sm font-bold ${
-                  unit.status === "PAID" ? "text-green-500" : "text-red-500"
+                  unit.status === "PAID" ? "text-success" : "text-error"
                 }`}
               >
                 {unit.status}

@@ -70,7 +70,7 @@ const ViewBill = () => {
     navigation?.setOptions({
       headerLeft: () => (
         <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Text className="text-blue-500">Back</Text>
+          <Text className="text-primary">Back</Text>
         </TouchableOpacity>
       ),
       title: "  Unit: " + unit_number || "",
@@ -214,7 +214,7 @@ const ViewBill = () => {
           <View className="flex flex-row items-center gap-2">
             <TouchableOpacity
               onPress={handleMarkAsPaid}
-              className="flex-1 bg-blue-500 p-4 rounded-lg"
+              className="flex-1 bg-primary p-4 rounded-lg"
             >
               <Text className="text-white text-center">Submit</Text>
             </TouchableOpacity>
@@ -277,7 +277,7 @@ const ViewBill = () => {
               <Text
                 className={`text-sm ${
                   bill?.status === "PAID"
-                    ? "text-green-600 font-bold"
+                    ? "text-success font-bold"
                     : bill?.status === "UNPAID"
                     ? "text-red-600 font-bold"
                     : "text-yellow-600 font-bold"
@@ -293,7 +293,7 @@ const ViewBill = () => {
               <Text
                 className={`text-sm ${
                   bill?.verification_status === "APPROVED"
-                    ? "text-green-600 font-bold"
+                    ? "text-success font-bold"
                     : "text-yellow-600 font-bold"
                 }`}
               >
@@ -337,7 +337,7 @@ const ViewBill = () => {
         <View className="p-4 border-t border-gray-200 bg-white">
           <TouchableOpacity
             onPress={() => setShowBottomSheet(true)}
-            className="bg-blue-500 p-3 rounded-lg"
+            className="bg-primary p-3 rounded-lg"
           >
             <Text className="text-white text-center text-sm">Mark as Paid</Text>
           </TouchableOpacity>
