@@ -11,6 +11,8 @@ import {
   SafeAreaView,
   ActivityIndicator,
   Alert,
+  Switch,
+  Modal,
 } from "react-native";
 import DateTimePicker, {
   DateTimePickerEvent,
@@ -35,6 +37,8 @@ const GenerateBill = () => {
   const [subCategory, setSubCategory] = useState("");
   const [categories, setCategories] = useState([]);
   const [subCategories, setSubCategories] = useState([]);
+  const [enableFixedBill, setEnableFixedBill] = useState(false);
+  const [showBillPreview, setShowBillPreview] = useState(false);
 
   const router = useRouter();
 
@@ -82,7 +86,7 @@ const GenerateBill = () => {
     const selectedCategory = categories.find(
       (category: any) => category.name === value
     );
-    setSubCategories(selectedCategory ? selectedCategory?.subcategories : []);
+    setSubCategories(selectedCategory.subcategories || []);
   };
 
   const handleDateChange = (
@@ -160,6 +164,14 @@ const GenerateBill = () => {
           className="flex-1 p-6"
           contentContainerStyle={{ paddingBottom: 100 }} // Ensure space for sticky button
         >
+          <View className="mb-6">
+            <Text className="text-base font-semibold mb-2">Name</Text>
+            <Switch
+              value={enableFixedBill}
+              onValueChange={setEnableFixedBill}
+              className="border-gray-300 border-solid border p-2 rounded-lg shadow-sm"
+            />
+          </View>
           <View className="mb-6">
             <Text className="text-base font-semibold mb-2">Name</Text>
             <TextInput
@@ -286,8 +298,8 @@ const GenerateBill = () => {
           </View>
         </ScrollView>
         <Pressable
-          className="flex items-center p-2 bg-blue-500 px-4 py-4"
-          onPress={handleGenerateBill}
+          className="flex items-center p-2 bg-primary px-4 py-4"
+          onPress={() => setShowBillPreview(true)}
           disabled={loading}
         >
           {loading ? (
@@ -314,6 +326,52 @@ const GenerateBill = () => {
           />
         )}
       </KeyboardAvoidingView>
+      <Modal
+        visible={showBillPreview}
+        onRequestClose={() => setShowBillPreview(false)}
+        transparent={true}
+      >
+        <View className="flex-1 justify-end bg-gray-900 bg-opacity-50">
+          <View className="bg-white rounded-t-lg max-h-[90%] min-h-[50%] p-2">
+            <Text className="text-2xl font-bold">Bill Preview</Text>
+            <View className="mt-2 border border-solid border-gray-100">
+              <Text className="text-sm p-2">Bill Name : {name}</Text>
+              <Text className="text-sm p-2">Bill Category : {category}</Text>
+              <Text className="text-sm p-2">
+                Bill Sub Category : {subCategory}
+              </Text>
+              <Text className="text-sm p-2">Amount : {amount}</Text>
+              <Text className="text-sm p-2">
+                Due Date : {dueDate.toDateString()}
+              </Text>
+              <Text className="text-sm p-2">
+                Bill Duration : {billDurationFrom.toLocaleDateString()} -{" "}
+                {billDurationTo.toLocaleDateString()}
+              </Text>
+              <Text className="text-sm p-2">
+                Bill Type :{" "}
+                {enableFixedBill
+                  ? "Fixed Amount"
+                  : "Variable Amount (Based on Unit type)"}
+              </Text>
+            </View>
+            <View className="absolute bottom-0 left-0 right-0 flex-row bg-white p-4 border-t border-gray-200">
+              <TouchableOpacity
+                onPress={handleGenerateBill}
+                className="flex-1 bg-primary p-3 rounded-lg mr-2"
+              >
+                <Text className="text-center text-white">Submit</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => setShowBillPreview(false)}
+                className="flex-1 bg-gray-300 p-3 rounded-lg"
+              >
+                <Text className="text-center text-black">Close</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 };

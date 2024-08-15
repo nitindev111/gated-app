@@ -107,7 +107,7 @@ const Bills = () => {
               <Text
                 className={`text-xs ${
                   bill.verification_status === "APPROVED"
-                    ? "text-green-600  bg-green-200 rounded-md p-1"
+                    ? "text-success  bg-green-200 rounded-md p-1"
                     : "text-red-600 bg-red-200 rounded-md p-1"
                 } uppercase`}
               >

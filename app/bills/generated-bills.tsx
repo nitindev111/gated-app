@@ -101,7 +101,7 @@ const ViewBills = () => {
             }}
           >
             <View>
-              <Text className="text-lg font-bold mb-2 text-blue-800">
+              <Text className="text-lg font-bold mb-2 text-primary-800">
                 {billGroup.bill_name}
               </Text>
               <Text className="text-sm text-gray-600 mb-2">
@@ -118,7 +118,7 @@ const ViewBills = () => {
           </Link>
           <TouchableOpacity
             onPress={() => confirmDelete(billGroup.bill_name)}
-            className="mt-4 bg-red-600 p-3 rounded-full shadow-md"
+            className="mt-4 bg-danger p-3 rounded-lg shadow-md"
           >
             <Text className="text-white text-center font-semibold">
               Delete All Bills

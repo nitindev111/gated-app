@@ -5,8 +5,13 @@ module.exports = {
     theme: {
         extend: {
             colors: {
-                primary: '#161622',
-                secondary: '#FFA001'
+                primary: '#6575A8',
+                secondary: '#E3C4E5',
+                success: "#0BDA51",
+                error: "#A52A2A",
+                danger: "#EE4B2B",
+                info: "",
+                pending: ""
             }
         },
     },

@@ -209,10 +209,10 @@ const ViewUnits = () => {
   }
 
   return (
-    <ScrollView className="flex-1 p-6 bg-white">
-      <View className="flex-row items-center border border-gray-300 p-2 mb-4 rounded">
+    <ScrollView className="flex-1 p-6 bg-gray-200">
+      <View className="flex-row items-center border border-white mb-4 rounded-2xl">
         <TextInput
-          className="flex-1"
+          className="flex-1 bg-white p-2 rounded-2xl"
           placeholder="Search by Unit Number or Owner Name"
           value={searchQuery}
           onChangeText={setSearchQuery}
@@ -226,7 +226,7 @@ const ViewUnits = () => {
       {filteredUnits.map((unit, index) => (
         <View
           key={index}
-          className="border border-gray-300 p-4 rounded-lg mb-4 bg-white shadow-sm"
+          className=" p-4  mb-4 bg-white shadow-md rounded-lg border border-gray-200"
         >
           <Text className="text-lg font-bold mb-2">
             Unit Number: {unit.unit_number}
@@ -240,7 +240,7 @@ const ViewUnits = () => {
           <View className="flex-row justify-between mt-2">
             <TouchableOpacity
               onPress={() => handleView(unit)}
-              className="bg-blue-600 p-2 rounded-lg flex-1 mr-2"
+              className="bg-primary p-2 rounded-lg flex-1 mr-2"
             >
               <Text className="text-white text-center">View</Text>
             </TouchableOpacity>
@@ -280,7 +280,7 @@ const ViewUnits = () => {
                       <Text className="text-sm text-gray-600">
                         Phone Number:
                       </Text>
-                      <Text className="ml-2 text-blue-600">
+                      <Text className="ml-2 text-primary">
                         {selectedUnit?.phoneNumber || "N/A"}
                       </Text>
                     </View>
@@ -333,7 +333,7 @@ const ViewUnits = () => {
 
                 <TouchableOpacity
                   onPress={() => setModalVisible(false)}
-                  className="mt-6 bg-blue-600 p-3 rounded-lg"
+                  className="mt-6 bg-primary p-3 rounded-lg"
                 >
                   <Text className="text-center text-white font-semibold">
                     Close
@@ -604,7 +604,7 @@ const ViewUnits = () => {
             <View className="absolute bottom-0 left-0 right-0 flex-row bg-white p-4 border-t border-gray-200">
               <TouchableOpacity
                 onPress={handleUpdateSubmit}
-                className="flex-1 bg-blue-600 p-3 rounded-lg mr-2"
+                className="flex-1 bg-primary p-3 rounded-lg mr-2"
               >
                 <Text className="text-center text-white">Submit</Text>
               </TouchableOpacity>

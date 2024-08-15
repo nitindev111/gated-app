@@ -160,13 +160,14 @@ const AddIncome = ({ societyId = "668ec76634a193bb66e98ead" }) => {
         contentContainerStyle={{ paddingBottom: 100 }}
         className="p-6"
       >
-        <Text className="text-lg font-bold mb-4">Record Income</Text>
+        <Text className="text-lg font-bold mb-4 text-center">
+          Record Income
+        </Text>
         <Text className="text-sm font-semibold mb-2">Category</Text>
         <View className="border border-gray-300 rounded-lg mb-4">
           <Picker
             selectedValue={form.category}
             onValueChange={(value) => handleInputChange("category", value)}
-            className="h-10"
           >
             <Picker.Item label="Select Category" value="" />
             {categories.map((category, index) => (
@@ -188,7 +189,6 @@ const AddIncome = ({ societyId = "668ec76634a193bb66e98ead" }) => {
                 onValueChange={(value) =>
                   handleInputChange("sub_category", value)
                 }
-                className="h-10"
               >
                 <Picker.Item label="Select Sub Category" value="" />
                 {subCategories.map((subCategory, index) => (
@@ -208,7 +208,6 @@ const AddIncome = ({ societyId = "668ec76634a193bb66e98ead" }) => {
           <Picker
             selectedValue={form.account_id}
             onValueChange={(value) => handleInputChange("account_id", value)}
-            className="h-10"
           >
             <Picker.Item label="Select Account" value="" />
             {accounts.map((account: any) => (
@@ -228,7 +227,6 @@ const AddIncome = ({ societyId = "668ec76634a193bb66e98ead" }) => {
             onValueChange={(value) =>
               handleInputChange("payment_method", value)
             }
-            className="h-10"
           >
             <Picker.Item label="Select Payment Method" value="" />
             <Picker.Item value="CASH" label="Online (net banking, upi etc)" />
@@ -248,7 +246,7 @@ const AddIncome = ({ societyId = "668ec76634a193bb66e98ead" }) => {
         <Text className="text-sm font-semibold mb-2">Transaction Date</Text>
         <TouchableOpacity
           onPress={() => setShowDatePicker(true)}
-          className="mb-4 border border-gray-300 rounded-lg p-2 justify-center"
+          className="mb-4 border border-gray-300 rounded-lg p-4 justify-center"
         >
           <Text>{form.date.toDateString()}</Text>
         </TouchableOpacity>
@@ -287,7 +285,7 @@ const AddIncome = ({ societyId = "668ec76634a193bb66e98ead" }) => {
       </ScrollView>
       <TouchableOpacity
         onPress={handleSubmit}
-        className="bg-blue-500 p-4 rounded-lg absolute bottom-0 left-0 right-0"
+        className="bg-primary p-4 rounded-lg absolute bottom-0 left-0 right-0"
       >
         <Text className="text-white text-center font-bold">Submit</Text>
       </TouchableOpacity>

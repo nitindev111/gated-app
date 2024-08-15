@@ -19,27 +19,29 @@ export const UserProvider: React.FC<any> = ({ children }) => {
     setUser(null);
   };
 
+  const fetchUser = async () => {
+    setLoading(true);
+    try {
+      const decodedToken = await getDecodedToken();
+      console.log("User loaded from AsyncStorage:", decodedToken);
+      if (decodedToken) {
+        setUser(decodedToken);
+      } else {
+        console.log("No token found in AsyncStorage");
+      }
+    } catch (error) {
+      console.error("Error retrieving token from AsyncStorage:", error);
+      setUser(null);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchSocietyDetails = () => {};
   useEffect(() => {
     console.log("====================================");
     console.log("use effect in user", user);
     console.log("====================================");
-    const fetchUser = async () => {
-      setLoading(true);
-      try {
-        const decodedToken = await getDecodedToken();
-        console.log("User loaded from AsyncStorage:", decodedToken);
-        if (decodedToken) {
-          setUser(decodedToken);
-        } else {
-          console.log("No token found in AsyncStorage");
-        }
-      } catch (error) {
-        console.error("Error retrieving token from AsyncStorage:", error);
-        setUser(null);
-      } finally {
-        setLoading(false);
-      }
-    };
 
     fetchUser();
   }, [user?.user_id]);

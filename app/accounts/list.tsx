@@ -14,6 +14,7 @@ import axiosInstance from "../utils/axiosInstance";
 import { RUPEE_SYMBOL } from "@/constants/others";
 import { BACKEND_BASE_URL } from "@/config/config";
 import icons from "@/constants/icons";
+import { Colors } from "@/constants/Colors";
 
 const AccountsList = () => {
   const [accounts, setAccounts] = useState([]);
@@ -152,7 +153,7 @@ const AccountsList = () => {
 
   return (
     <>
-      <ScrollView className="flex-1 p-6 bg-white">
+      <ScrollView className="flex-1 p-6 bg-gray-100">
         {accounts.map((account) => (
           <View
             key={account._id}
@@ -256,7 +257,7 @@ const AccountsList = () => {
           <TouchableOpacity
             onPress={isEditing ? handleEditAccount : handleAddAccount}
             className={`${
-              isEditing ? "bg-green-500" : "bg-blue-500"
+              isEditing ? "bg-green-500" : "bg-primary"
             } p-4 rounded-lg mb-2`}
           >
             <Text className="text-white text-center">
@@ -265,7 +266,7 @@ const AccountsList = () => {
           </TouchableOpacity>
           <TouchableOpacity
             onPress={closeEditModal}
-            className="bg-gray-500 p-4 rounded-lg"
+            className="bg-secondary p-4 rounded-lg"
           >
             <Text className="text-white text-center">Cancel</Text>
           </TouchableOpacity>
@@ -285,7 +286,7 @@ const AccountsList = () => {
             </Text>
             <TouchableOpacity
               onPress={handleDeleteAccount}
-              className="bg-red-500 p-4 rounded-lg mb-2"
+              className="bg-danger p-4 rounded-lg mb-2"
             >
               <Text className="text-white text-center">Delete Account</Text>
             </TouchableOpacity>
@@ -308,7 +309,10 @@ const AccountsList = () => {
           right: 20,
         }}
       >
-        <Image source={icons.plusIcon} style={{ width: 48, height: 48 }} />
+        <Image
+          source={icons.plusIcon}
+          style={{ width: 48, height: 48, tintColor: Colors.light.primary }}
+        />
       </TouchableOpacity>
     </>
   );

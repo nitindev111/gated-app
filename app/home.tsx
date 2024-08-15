@@ -1,79 +1,57 @@
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, Image } from "react-native";
 import { useRouter } from "expo-router";
 import AsyncStorage, {
   useAsyncStorage,
 } from "@react-native-async-storage/async-storage";
 import { useUser } from "./context/UserProvider";
-
-const HOME_SECTIONS = [
-  {
-    name: "My bills",
-    path: "mybills",
-    icon: "eye",
-  },
-  {
-    name: "Members",
-    path: "members",
-    icon: "play",
-  },
-  {
-    name: "Downloads",
-    label: "Downloads",
-    path: "downloads",
-    icon: "profile",
-  },
-  {
-    name: "Visitors",
-    label: "Visitors",
-    path: "visitors",
-    icon: "bookmark",
-  },
-  {
-    name: "Logout",
-    label: "Logout",
-    path: "/logout",
-    icon: "bookmark",
-  },
-];
+import icons from "@/constants/icons";
+import { FontAwesome } from "@expo/vector-icons";
+import { Colors } from "@/constants/Colors";
 
 const HOME_SECTIONS_ADMIN = [
   {
     name: "Accounting",
     path: "accounts",
-    icon: "eye",
+    icon: "user",
   },
   {
     name: "Members",
     path: "/members",
-    icon: "play",
+    icon: "users",
   },
   {
     name: "Downloads",
     label: "Downloads",
     path: "downloads",
-    icon: "profile",
+    icon: "download",
   },
   {
     name: "Manage Bills",
     label: "Manage Bills",
     path: "bills",
-    icon: "bookmark",
+    icon: "file-pdf-o",
   },
   {
     name: "Logout",
     label: "Logout",
     path: "/logout",
-    icon: "bookmark",
+    icon: "sign-out",
   },
 ];
 
-const SectionCard: React.FC<any> = ({ name, onPress }) => (
+const SectionCard: React.FC<{
+  name: string;
+  icon: any;
+  onPress: () => void;
+}> = ({ name, icon, onPress }) => (
   <TouchableOpacity
     onPress={onPress}
-    className="bg-gray-200 m-2 flex-1 h-32 justify-center items-center"
+    className="bg-gray-200 flex-1 m-4 justify-center items-center border border-solid border-gray-300 shadow-md"
   >
-    <Text className="text-lg font-bold">{name}</Text>
+    {/* <Image source={icon} /> */}
+    <FontAwesome name={icon} size={40} color={Colors.light.primary} />
+    <Text className="text-sm">{name}</Text>
   </TouchableOpacity>
 );
 
@@ -95,25 +73,14 @@ const Home = () => {
 
   const renderSectionCards = () => {
     const sections = HOME_SECTIONS_ADMIN;
-
-    const rows = [];
-    for (let i = 0; i < sections.length; i += 2) {
-      const rowItems = sections
-        .slice(i, i + 2)
-        .map((section, index) => (
-          <SectionCard
-            key={index}
-            name={section.name}
-            onPress={() => handleSectionClick(section.path)}
-          />
-        ));
-      rows.push(
-        <View key={i} className="flex-row">
-          {rowItems}
-        </View>
-      );
-    }
-    return rows;
+    return sections.map((section, index) => (
+      <SectionCard
+        key={index}
+        name={section.name}
+        icon={section.icon}
+        onPress={() => handleSectionClick(section.path)}
+      />
+    ));
   };
 
   return <View className="flex-1 p-2">{renderSectionCards()}</View>;

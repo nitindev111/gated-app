@@ -14,7 +14,7 @@ const Button: React.FC<ButtonProps> = ({
 }) => {
   return (
     <Pressable
-      className="flex items-center w-full p-2 bg-blue-500 px-4 py-4 rounded-md"
+      className="flex items-center w-full p-2 bg-primary px-4 py-4 rounded-md"
       onPress={onPress}
       disabled={disabled}
     >
