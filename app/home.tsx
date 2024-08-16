@@ -20,12 +20,12 @@ const HOME_SECTIONS_ADMIN = [
     path: "/members",
     icon: "users",
   },
-  {
-    name: "Downloads",
-    label: "Downloads",
-    path: "downloads",
-    icon: "download",
-  },
+  // {
+  //   name: "Downloads",
+  //   label: "Downloads",
+  //   path: "downloads",
+  //   icon: "download",
+  // },
   {
     name: "Manage Bills",
     label: "Manage Bills",
@@ -83,7 +83,11 @@ const Home = () => {
     ));
   };
 
-  return <View className="flex-1 p-2">{renderSectionCards()}</View>;
+  return (
+    <View className="flex-1 p-2">
+      <View className="h-[75%]">{renderSectionCards()}</View>
+    </View>
+  );
 };
 
 export default Home;

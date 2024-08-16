@@ -39,9 +39,7 @@ const ViewBillDetails: React.FC<ViewBillDetailsProps> = ({
         <View className="bg-red-50 flex-row items-center justify-evenly">
           <Ionicons name="business" size={32} color="green" />
           <View className="p-2">
-            <Text className="text-sm">
-              Unit Number: {bill?.unit?.unit_number}
-            </Text>
+            <Text className="text-sm">Unit : {bill?.unit?.unit_number}</Text>
             <Text className="text-sm mb-2">
               Owner Name: {bill?.unit?.owner}
             </Text>

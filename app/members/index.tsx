@@ -122,26 +122,6 @@ const ViewUnits = () => {
     );
   };
 
-  // const handleDateChange = (
-  //   event: DateTimePickerEvent,
-  //   selectedDate: Date
-  // ): void => {
-  //   console.log("====================================");
-  //   console.log("selected", selectedDate);
-  //   console.log("========dhoepivkrt ============================", showPicker);
-  //   if (selectedDate) {
-  //     if (showPicker.type === "construction_start_date")
-  //       setSelectedUnit({
-  //         ...selectedUnit,
-  //         construction_start_date: selectedDate,
-  //       });
-  //     if (showPicker.type === "to") setBillDurationTo(selectedDate);
-  //     if (showPicker.type === "due") setDueDate(selectedDate);
-  //     if (showPicker.type === "invoice") setInvoiceDate(selectedDate);
-  //   }
-  //   setShowPicker({ type: "", visible: false });
-  // };
-
   const handleView = (unit) => {
     setSelectedUnit(unit);
     setModalVisible(true);
@@ -213,7 +193,7 @@ const ViewUnits = () => {
       <View className="flex-row items-center border border-white mb-4 rounded-2xl">
         <TextInput
           className="flex-1 bg-white p-2 rounded-2xl"
-          placeholder="Search by Unit Number or Owner Name"
+          placeholder="Search by Unit or Owner Name"
           value={searchQuery}
           onChangeText={setSearchQuery}
         />
@@ -228,12 +208,10 @@ const ViewUnits = () => {
           key={index}
           className=" p-4  mb-4 bg-white shadow-md rounded-lg border border-gray-200"
         >
-          <Text className="text-lg font-bold mb-2">
-            Unit Number: {unit.unit_number}
+          <Text className="text-lg font-semibold mb-2">
+            Unit : {unit.unit_number}
           </Text>
-          <Text className="text-sm text-gray-600 mb-2">
-            Owner: {unit.name || "Unknown"}
-          </Text>
+          <Text className="text-sm  mb-2">Owner: {unit.name || "Unknown"}</Text>
           <Text className="text-sm text-gray-600 mb-2">
             Unit Type: {unit.unit_type || "Unknown"}
           </Text>
@@ -264,10 +242,10 @@ const ViewUnits = () => {
             {selectedUnit && (
               <>
                 <View className="mb-4">
-                  <Text className="text-xl font-bold text-gray-800">
-                    Unit Number: {selectedUnit.unit_number}
+                  <Text className="text-lg font-bold text-gray-800">
+                    Unit : {selectedUnit.unit_number}
                   </Text>
-                  <Text className="text-sm text-gray-600">
+                  <Text className="mt-2 text-sm text-gray-700">
                     Owner: {selectedUnit?.name || "Unknown"}
                   </Text>
                 </View>
@@ -290,7 +268,7 @@ const ViewUnits = () => {
                       Has Construction:
                     </Text>
                     <Text className="ml-2 text-gray-800">
-                      {selectedUnit.has_construction ? "YES" : "NO"}
+                      {selectedUnit.has_construction ? "Yes" : "No"}
                     </Text>
                   </View>
                   <View className="flex-row items-center mb-3">
@@ -298,7 +276,9 @@ const ViewUnits = () => {
                       Construction Started:
                     </Text>
                     <Text className="ml-2 text-gray-800">
-                      {selectedUnit.construction_start_date || "-"}
+                      {new Date(
+                        selectedUnit.construction_start_date
+                      ).toLocaleDateString() || "-"}
                     </Text>
                   </View>
                   <View className="flex-row items-center mb-3">
@@ -306,7 +286,9 @@ const ViewUnits = () => {
                       Construction Ending:
                     </Text>
                     <Text className="ml-2 text-gray-800">
-                      {selectedUnit.construction_end_date || "-"}
+                      {new Date(
+                        selectedUnit.construction_end_date
+                      ).toLocaleDateString() || "-"}
                     </Text>
                   </View>
                 </View>
@@ -415,17 +397,17 @@ const ViewUnits = () => {
                       <TextInput
                         className="border border-gray-300 p-2 mb-4 rounded"
                         placeholder="Construction Start Date"
-                        value={selectedUnit.construction_start_date}
+                        value={new Date(
+                          selectedUnit?.construction_start_date || Date.now()
+                        )?.toLocaleDateString()}
                         onFocus={() => setShowStartDatePicker(true)}
                         editable
                       />
                       {showStartDatePicker && (
                         <DateTimePicker
-                          value={
-                            new Date(
-                              selectedUnit.construction_start_date || Date.now()
-                            )
-                          }
+                          value={new Date(
+                            selectedUnit.construction_end_date || Date.now()
+                          ).toLocaleDateString()}
                           mode="date"
                           display="spinner"
                           onChange={(event, selectedDate) => {

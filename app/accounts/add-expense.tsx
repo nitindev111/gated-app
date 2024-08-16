@@ -262,7 +262,7 @@ const AddExpense = ({ societyId = "668ec76634a193bb66e98ead" }) => {
           <DateTimePicker
             value={form.date}
             mode="date"
-            display="default"
+            display="compact"
             onChange={(event, selectedDate) => {
               setShowDatePicker(false);
               if (selectedDate) {

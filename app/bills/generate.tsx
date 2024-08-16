@@ -22,6 +22,7 @@ import { GENERATE_BILL } from "@/constants/api.constants";
 import { useRouter } from "expo-router";
 import { BACKEND_BASE_URL } from "@/config/config";
 import { Picker } from "@react-native-picker/picker";
+import { useUser } from "../context/UserProvider";
 
 const GenerateBill = () => {
   const [name, setName] = useState("");
@@ -37,10 +38,12 @@ const GenerateBill = () => {
   const [subCategory, setSubCategory] = useState("");
   const [categories, setCategories] = useState([]);
   const [subCategories, setSubCategories] = useState([]);
-  const [enableFixedBill, setEnableFixedBill] = useState(false);
+  const [enableFixedCharges, setenableFixedCharges] = useState(false);
   const [showBillPreview, setShowBillPreview] = useState(false);
 
   const router = useRouter();
+  const { user } = useUser();
+  const societyId = user?.society_id;
 
   useEffect(() => {
     fetchCategories();
@@ -113,10 +116,11 @@ const GenerateBill = () => {
         due_date: dueDate.toISOString(),
         invoice_date: invoiceDate.toISOString(),
         generated_at: new Date(),
-        society_id: "668ec76634a193bb66e98ead",
+        society_id: societyId,
         amount,
         category,
         sub_category: subCategory,
+        enableFixedCharges,
       };
 
       try {
@@ -166,14 +170,6 @@ const GenerateBill = () => {
         >
           <View className="mb-6">
             <Text className="text-base font-semibold mb-2">Name</Text>
-            <Switch
-              value={enableFixedBill}
-              onValueChange={setEnableFixedBill}
-              className="border-gray-300 border-solid border p-2 rounded-lg shadow-sm"
-            />
-          </View>
-          <View className="mb-6">
-            <Text className="text-base font-semibold mb-2">Name</Text>
             <TextInput
               autoFocus
               placeholder="Enter bill name"
@@ -219,13 +215,21 @@ const GenerateBill = () => {
               </View>
             </>
           )}
-          <View className="mb-6">
+          <View className="mb-2">
             <Text className="text-base font-semibold mb-2">Base amount</Text>
             <TextInput
               keyboardType="numeric"
               placeholder="Enter bill name"
               value={amount}
               onChangeText={setAmount}
+              className="border-gray-300 border-solid border p-2 rounded-lg shadow-sm"
+            />
+          </View>
+          <View className="flex-row items-center">
+            <Text className="text-base font-semibold mb-2">Fixed Charges</Text>
+            <Switch
+              value={enableFixedCharges}
+              onValueChange={setenableFixedCharges}
               className="border-gray-300 border-solid border p-2 rounded-lg shadow-sm"
             />
           </View>
@@ -299,7 +303,12 @@ const GenerateBill = () => {
         </ScrollView>
         <Pressable
           className="flex items-center p-2 bg-primary px-4 py-4"
-          onPress={() => setShowBillPreview(true)}
+          onPress={() => {
+            if (validateForm()) {
+              setShowBillPreview(true);
+            }
+            return;
+          }}
           disabled={loading}
         >
           {loading ? (
@@ -320,7 +329,7 @@ const GenerateBill = () => {
                 : invoiceDate
             }
             mode="date"
-            display="default"
+            display="compact"
             onChange={(event, data) => handleDateChange(event, data as Date)}
             style={{ width: "100%" }}
           />
@@ -350,7 +359,7 @@ const GenerateBill = () => {
               </Text>
               <Text className="text-sm p-2">
                 Bill Type :{" "}
-                {enableFixedBill
+                {enableFixedCharges
                   ? "Fixed Amount"
                   : "Variable Amount (Based on Unit type)"}
               </Text>
@@ -360,7 +369,7 @@ const GenerateBill = () => {
                 onPress={handleGenerateBill}
                 className="flex-1 bg-primary p-3 rounded-lg mr-2"
               >
-                <Text className="text-center text-white">Submit</Text>
+                <Text className="text-center text-white">Generate Bill</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => setShowBillPreview(false)}

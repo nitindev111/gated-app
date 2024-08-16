@@ -164,7 +164,7 @@ const ViewBill = () => {
               <DateTimePicker
                 value={paymentDetails.date}
                 mode="date"
-                display="default"
+                display="compact"
                 onChange={(event, selectedDate) => {
                   setShowDatePicker(false);
                   if (selectedDate) {

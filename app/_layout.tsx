@@ -53,7 +53,7 @@ function AppStack() {
         screenOptions={{
           headerShown: true,
           headerStyle: {
-            backgroundColor: Colors.light.primary,
+            backgroundColor: Colors.light.secondary,
           },
         }}
       >
@@ -64,7 +64,7 @@ function AppStack() {
           options={{
             headerBackVisible: false,
             headerShown: true,
-            headerTitle: "",
+            headerTitle: "Home",
           }}
         />
         <Stack.Screen name="bills" />

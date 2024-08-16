@@ -6,6 +6,7 @@ import logo from "../assets/images/logo.png";
 import logoSmall from "../assets/images/logo-small.png";
 import empty from "../assets/images/empty.png";
 import gateup from "../assets/images/gateup.png";
+import gateupsmall from "../assets/images/gateup-small.png";
 
 export default {
   profile,
@@ -16,4 +17,5 @@ export default {
   logoSmall,
   empty,
   gateup,
+  gateupsmall,
 };

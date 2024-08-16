@@ -130,7 +130,7 @@ const PaidAmountDetails = () => {
           <DateTimePicker
             value={date}
             mode="date"
-            display="default"
+            display="compact"
             onChange={handleDateChange}
           />
         )}

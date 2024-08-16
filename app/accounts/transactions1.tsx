@@ -283,7 +283,7 @@ const Transactions = () => {
               : new Date()
           }
           mode="date"
-          display="default"
+          display="compact"
           onChange={(event, selectedDate) => {
             if (selectedDate) {
               setFilters((prevFilters) => ({

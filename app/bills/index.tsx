@@ -17,9 +17,12 @@ const ManageBills = () => {
         onPress={() => handleSectionClick("bills/generate")}
       >
         <View className="w-[90%] pr-4">
-          <Text className="text-lg font-bold">Generate Maintenance Bills</Text>
+          <Text className="text-lg font-bold">
+            Generate Bulk Maintenance Bills
+          </Text>
           <Text className="text-sm text-gray-600 mb-2">
-            Generate the regular monthly bills for the society.
+            Generate regular monthly bills for the society.These bills will be
+            created for all the units and amount can be fixed or variable.
           </Text>
         </View>
         <View className="p-2 flex-1">
