@@ -16,9 +16,7 @@ import { useUser } from "../context/UserProvider";
 import { RUPEE_SYMBOL } from "@/constants/others";
 import { Ionicons } from "@expo/vector-icons";
 import { Picker } from "@react-native-picker/picker";
-import DateTimePicker, {
-  DateTimePickerEvent,
-} from "@react-native-community/datetimepicker";
+import DateTimePicker from "@react-native-community/datetimepicker";
 const UNITS_API = "/units";
 
 const ViewUnits = () => {
@@ -276,9 +274,11 @@ const ViewUnits = () => {
                       Construction Started:
                     </Text>
                     <Text className="ml-2 text-gray-800">
-                      {new Date(
-                        selectedUnit.construction_start_date
-                      ).toLocaleDateString() || "-"}
+                      {selectedUnit.construction_start_date
+                        ? new Date(
+                            selectedUnit.construction_start_date
+                          ).toLocaleDateString()
+                        : "N/A"}
                     </Text>
                   </View>
                   <View className="flex-row items-center mb-3">
@@ -286,9 +286,35 @@ const ViewUnits = () => {
                       Construction Ending:
                     </Text>
                     <Text className="ml-2 text-gray-800">
-                      {new Date(
-                        selectedUnit.construction_end_date
-                      ).toLocaleDateString() || "-"}
+                      {selectedUnit.construction_end_date
+                        ? new Date(
+                            selectedUnit.construction_end_date
+                          ).toLocaleDateString()
+                        : "N/A"}
+                    </Text>
+                  </View>
+                  <View className="flex-row items-center mb-3">
+                    <Text className="text-sm text-gray-600">
+                      Additional Construction Started:
+                    </Text>
+                    <Text className="ml-2 text-gray-800">
+                      {selectedUnit.additional_charge_start_date
+                        ? new Date(
+                            selectedUnit.additional_charge_start_date
+                          ).toLocaleDateString()
+                        : "N/A"}
+                    </Text>
+                  </View>
+                  <View className="flex-row items-center mb-3">
+                    <Text className="text-sm text-gray-600">
+                      Additional Construction Ending:
+                    </Text>
+                    <Text className="ml-2 text-gray-800">
+                      {selectedUnit.additional_charge_end_date
+                        ? new Date(
+                            selectedUnit.additional_charge_end_date
+                          ).toLocaleDateString()
+                        : "N/A"}
                     </Text>
                   </View>
                 </View>
