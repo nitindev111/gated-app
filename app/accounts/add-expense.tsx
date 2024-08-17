@@ -111,7 +111,7 @@ const AddExpense = ({ societyId = "668ec76634a193bb66e98ead" }) => {
 
   const handleSubmit = async () => {
     if (!validateForm()) return;
-
+    setLoading(true);
     try {
       const url = `${BACKEND_BASE_URL}/expense/create`;
       const data = {
@@ -148,6 +148,8 @@ const AddExpense = ({ societyId = "668ec76634a193bb66e98ead" }) => {
     } catch (error) {
       console.error("Error recording expense:", error.response.data);
       Alert.alert("Error", "Failed to record expense. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -219,7 +221,7 @@ const AddExpense = ({ societyId = "668ec76634a193bb66e98ead" }) => {
             <Picker.Item label="Select Account" value="" />
             <Picker.Item value="CASH" label="Online (net banking, upi etc)" />
             <Picker.Item value="CASH" label="Cash" />
-            <Picker.Item value="CHECK" label="Check" />
+            <Picker.Item value="CHEQUE" label="Cheque" />
           </Picker>
         </View>
 
@@ -287,7 +289,7 @@ const AddExpense = ({ societyId = "668ec76634a193bb66e98ead" }) => {
           onChangeText={(text) =>
             handleInputChange("transaction_ref_number", text)
           }
-          placeholder="UPI/Transaction/Check number"
+          placeholder="UPI/Transaction/Cheque number"
           className="mb-4 border border-gray-300 rounded-lg p-2"
         />
 
@@ -298,8 +300,13 @@ const AddExpense = ({ societyId = "668ec76634a193bb66e98ead" }) => {
       <TouchableOpacity
         onPress={handleSubmit}
         className="bg-primary p-4 rounded-lg absolute bottom-0 left-0 right-0"
+        disabled={loading}
       >
-        <Text className="text-white text-center font-bold">Submit</Text>
+        {loading ? (
+          <ActivityIndicator size={"small"} />
+        ) : (
+          <Text className="text-white text-center font-bold">Submit</Text>
+        )}
       </TouchableOpacity>
     </View>
   );

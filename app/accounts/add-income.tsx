@@ -13,8 +13,11 @@ import {
 } from "react-native";
 import axiosInstance from "../utils/axiosInstance";
 import FileUpload from "../components/common/FileUpload";
+import { useRouter } from "expo-router";
 
 const AddIncome = ({ societyId = "668ec76634a193bb66e98ead" }) => {
+  const router = useRouter();
+
   const [categories, setCategories] = useState([]);
   const [subCategories, setSubCategories] = useState([]);
   const [accounts, setAccounts] = useState([]);
@@ -109,7 +112,7 @@ const AddIncome = ({ societyId = "668ec76634a193bb66e98ead" }) => {
 
   const handleSubmit = async () => {
     if (!validateForm()) return;
-
+    setLoading(true);
     try {
       const url = `${BACKEND_BASE_URL}/income/create`;
       const data = {
@@ -140,9 +143,12 @@ const AddIncome = ({ societyId = "668ec76634a193bb66e98ead" }) => {
         attachment_urls: [],
         transaction_ref_number: "",
       });
+      router.replace("/accounts/transactions");
     } catch (error) {
       console.error("Error recording income:", error.response?.data || error);
       Alert.alert("Error", "Failed to record income. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -231,7 +237,7 @@ const AddIncome = ({ societyId = "668ec76634a193bb66e98ead" }) => {
             <Picker.Item label="Select Payment Method" value="" />
             <Picker.Item value="CASH" label="Online (net banking, upi etc)" />
             <Picker.Item value="CASH" label="Cash" />
-            <Picker.Item value="CHECK" label="Check" />
+            <Picker.Item value="CHEQUE" label="Cheque" />
           </Picker>
         </View>
 
@@ -255,7 +261,7 @@ const AddIncome = ({ societyId = "668ec76634a193bb66e98ead" }) => {
           onChangeText={(text) =>
             handleInputChange("transaction_ref_number", text)
           }
-          placeholder="UPI/Transaction/Check number"
+          placeholder="UPI/Transaction/Cheque number"
           className="mb-4 border border-gray-300 rounded-lg p-2"
         />
         <Text className="text-sm font-semibold mb-2">Description</Text>

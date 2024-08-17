@@ -8,6 +8,7 @@ import {
   Pressable,
   KeyboardAvoidingView,
   Platform,
+  ActivityIndicator,
 } from "react-native";
 import React, { useState } from "react";
 import images from "../../constants/images";
@@ -16,6 +17,7 @@ import { BACKEND_BASE_URL } from "../../config/config";
 import { SEND_OTP } from "@/constants/api.constants";
 import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
 import Button from "../components/common/Button";
+import { Colors } from "@/constants/Colors";
 
 const Login = () => {
   const themeColor = useColorScheme();
@@ -74,6 +76,20 @@ const Login = () => {
       setLoading(false);
     }
   };
+
+  if (loading) {
+    return (
+      <View className="flex-1 justify-center items-center">
+        <Text className="">Validating phone</Text>
+        <ActivityIndicator
+          className="pt-2"
+          animating
+          size="large"
+          color={Colors.light.secondary}
+        />
+      </View>
+    );
+  }
   // https://reactnative.dev/docs/keyboardavoidingview
   return (
     <KeyboardAvoidingView

@@ -40,7 +40,7 @@ const PaidAmountDetails = () => {
       return;
     }
     if ((paymentType === "UPI" || paymentType === "Check") && !transactionId) {
-      Alert.alert("Error", "Transaction ID or Check Number is mandatory");
+      Alert.alert("Error", "Transaction ID or Cheque Number is mandatory");
       return;
     }
 
@@ -96,7 +96,7 @@ const PaidAmountDetails = () => {
       return (
         <TextInput
           className="border p-2 mb-4"
-          placeholder="Check Number"
+          placeholder="Cheque Number"
           value={transactionId}
           onChangeText={setTransactionId}
         />
@@ -154,7 +154,7 @@ const PaidAmountDetails = () => {
         <Text className="mr-4">UPI</Text>
 
         <CheckBox
-          value={paymentType === "Check"}
+          value={paymentType === "Check" || paymentType === "Cheque"}
           onValueChange={() => setPaymentType("Check")}
           className="mr-2"
         />

@@ -51,6 +51,7 @@ const ViewBill = () => {
   };
 
   const fetchAccounts = async () => {
+    setLoading(true);
     try {
       const response = await axiosInstance.get(
         `${BACKEND_BASE_URL}/accounts/view?society_id=${user?.society_id}`
@@ -58,6 +59,8 @@ const ViewBill = () => {
       setAccounts(response.data);
     } catch (error) {
       console.error("Error fetching accounts:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -102,7 +105,7 @@ const ViewBill = () => {
 
   const handleMarkAsPaid = async () => {
     if (!validateForm()) return;
-
+    setLoading(true);
     try {
       const url = `${BACKEND_BASE_URL}/bills/mark-paid`;
 
@@ -126,6 +129,8 @@ const ViewBill = () => {
       setShowBottomSheet(false);
     } catch (error) {
       console.error("Failed to mark bill as paid:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -188,7 +193,7 @@ const ViewBill = () => {
                 value="ONLINE"
               />
               <Picker.Item label="Cash" value="CASH" />
-              <Picker.Item label="Check" value="CHECK" />
+              <Picker.Item label="Cheque" value="CHEQUE" />
             </Picker>
           </View>
           <TextInput
