@@ -264,6 +264,12 @@ const ViewUnits = () => {
                       </Text>
                     </View>
                   </TouchableOpacity>
+                  <View className="flex-row items-center mb-3">
+                    <Text className="text-sm text-gray-600">Has Tenants:</Text>
+                    <Text className="ml-2 text-primary">
+                      {selectedUnit?.has_tenants ? "Yes" : "No"}
+                    </Text>
+                  </View>
                   {selectedUnit.unit_type === "UNDER_CONSTRUCTION" && (
                     <>
                       <View className="flex-row items-center mb-3">
