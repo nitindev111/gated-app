@@ -17,6 +17,7 @@ import { RUPEE_SYMBOL } from "@/constants/others";
 import { Ionicons } from "@expo/vector-icons";
 import { Picker } from "@react-native-picker/picker";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import { format } from "date-fns";
 const UNITS_API = "/units";
 
 const ViewUnits = () => {
@@ -101,6 +102,8 @@ const ViewUnits = () => {
       setLoading(false);
     }
   };
+
+  console.log("selected unit", selectedUnit);
 
   const confirmDelete = (unitId) => {
     Alert.alert(
@@ -248,7 +251,7 @@ const ViewUnits = () => {
                   </Text>
                 </View>
 
-                <View className="border-t border-gray-200 pt-4">
+                <View className="border-t border-gray-200 pt-2">
                   <TouchableOpacity
                     onPress={() => handleMakeCall(selectedUnit?.phoneNumber)}
                   >
@@ -261,65 +264,65 @@ const ViewUnits = () => {
                       </Text>
                     </View>
                   </TouchableOpacity>
-                  <View className="flex-row items-center mb-3">
-                    <Text className="text-sm text-gray-600">
-                      Has Construction:
-                    </Text>
-                    <Text className="ml-2 text-gray-800">
-                      {selectedUnit.has_construction ? "Yes" : "No"}
-                    </Text>
-                  </View>
-                  <View className="flex-row items-center mb-3">
-                    <Text className="text-sm text-gray-600">
-                      Construction Started:
-                    </Text>
-                    <Text className="ml-2 text-gray-800">
-                      {selectedUnit.construction_start_date
-                        ? new Date(
-                            selectedUnit.construction_start_date
-                          ).toLocaleDateString()
-                        : "N/A"}
-                    </Text>
-                  </View>
-                  <View className="flex-row items-center mb-3">
-                    <Text className="text-sm text-gray-600">
-                      Construction Ending:
-                    </Text>
-                    <Text className="ml-2 text-gray-800">
-                      {selectedUnit.construction_end_date
-                        ? new Date(
-                            selectedUnit.construction_end_date
-                          ).toLocaleDateString()
-                        : "N/A"}
-                    </Text>
-                  </View>
-                  <View className="flex-row items-center mb-3">
-                    <Text className="text-sm text-gray-600">
-                      Additional Construction Started:
-                    </Text>
-                    <Text className="ml-2 text-gray-800">
-                      {selectedUnit.additional_charge_start_date
-                        ? new Date(
-                            selectedUnit.additional_charge_start_date
-                          ).toLocaleDateString()
-                        : "N/A"}
-                    </Text>
-                  </View>
-                  <View className="flex-row items-center mb-3">
-                    <Text className="text-sm text-gray-600">
-                      Additional Construction Ending:
-                    </Text>
-                    <Text className="ml-2 text-gray-800">
-                      {selectedUnit.additional_charge_end_date
-                        ? new Date(
-                            selectedUnit.additional_charge_end_date
-                          ).toLocaleDateString()
-                        : "N/A"}
-                    </Text>
-                  </View>
+                  {selectedUnit.unit_type === "UNDER_CONSTRUCTION" && (
+                    <>
+                      <View className="flex-row items-center mb-3">
+                        <Text className="text-sm text-gray-600">
+                          Construction Started:
+                        </Text>
+                        <Text className="ml-2 text-gray-800">
+                          {selectedUnit.construction_start_date
+                            ? new Date(
+                                selectedUnit.construction_start_date
+                              ).toLocaleDateString()
+                            : "N/A"}
+                        </Text>
+                      </View>
+                      <View className="flex-row items-center mb-3">
+                        <Text className="text-sm text-gray-600">
+                          Construction Ending:
+                        </Text>
+                        <Text className="ml-2 text-gray-800">
+                          {selectedUnit.construction_end_date
+                            ? new Date(
+                                selectedUnit.construction_end_date
+                              ).toLocaleDateString()
+                            : "N/A"}
+                        </Text>
+                      </View>
+                    </>
+                  )}
+                  {selectedUnit.unit_type === "MISC_CONSTRUCTION" && (
+                    <>
+                      <View className="flex-row items-center mb-3">
+                        <Text className="text-sm text-gray-600">
+                          Additional Construction Started:
+                        </Text>
+                        <Text className="ml-2 text-gray-800">
+                          {selectedUnit.additional_charge_start_date
+                            ? new Date(
+                                selectedUnit.additional_charge_start_date
+                              ).toLocaleDateString()
+                            : "N/A"}
+                        </Text>
+                      </View>
+                      <View className="flex-row items-center mb-3">
+                        <Text className="text-sm text-gray-600">
+                          Additional Construction Ending:
+                        </Text>
+                        <Text className="ml-2 text-gray-800">
+                          {selectedUnit.additional_charge_end_date
+                            ? new Date(
+                                selectedUnit.additional_charge_end_date
+                              ).toLocaleDateString()
+                            : "N/A"}
+                        </Text>
+                      </View>
+                    </>
+                  )}
                 </View>
 
-                <View className="border-t border-gray-200 pt-4 mt-4">
+                <View className="border-t border-gray-200 pt-2 mt-2">
                   <View className="flex-row items-center mb-3">
                     <Text className="text-sm text-gray-600">
                       Monthly Charges:
@@ -402,16 +405,21 @@ const ViewUnits = () => {
                           setSelectedUnit({
                             ...selectedUnit,
                             unit_type: itemValue,
+                            construction_start_date: null,
+                            construction_end_date: null,
+                            additional_charge_start_date: null,
+                            additional_charge_end_date: null,
+                            construction_floors: null,
                           })
                         }
                       >
                         <Picker.Item label="NORMAL" value="NORMAL" />
                         <Picker.Item
-                          label="UNDER_CONSTRUCTION"
+                          label="Under construction"
                           value="UNDER_CONSTRUCTION"
                         />
                         <Picker.Item
-                          label="MISC_CONSTRUCTION"
+                          label="Additional construction"
                           value="MISC_CONSTRUCTION"
                         />
                       </Picker>
@@ -420,20 +428,30 @@ const ViewUnits = () => {
 
                   {selectedUnit.unit_type === "UNDER_CONSTRUCTION" && (
                     <>
+                      <Text className="text-sm text-gray-600 mb-2">
+                        Construction Start:
+                      </Text>
                       <TextInput
                         className="border border-gray-300 p-2 mb-4 rounded"
                         placeholder="Construction Start Date"
-                        value={new Date(
-                          selectedUnit?.construction_start_date || Date.now()
-                        )?.toLocaleDateString()}
+                        value={
+                          selectedUnit.construction_start_date
+                            ? format(
+                                selectedUnit.construction_start_date,
+                                "PPP"
+                              )
+                            : ""
+                        }
                         onFocus={() => setShowStartDatePicker(true)}
                         editable
                       />
                       {showStartDatePicker && (
                         <DateTimePicker
-                          value={new Date(
-                            selectedUnit.construction_end_date || Date.now()
-                          ).toLocaleDateString()}
+                          value={
+                            new Date(
+                              selectedUnit.construction_start_date || Date.now()
+                            )
+                          }
                           mode="date"
                           display="spinner"
                           onChange={(event, selectedDate) => {
@@ -449,11 +467,17 @@ const ViewUnits = () => {
                           }}
                         />
                       )}
-
+                      <Text className="text-sm text-gray-600 mb-2">
+                        Construction End:
+                      </Text>
                       <TextInput
                         className="border border-gray-300 p-2 mb-4 rounded"
                         placeholder="Construction End Date"
-                        value={selectedUnit.construction_end_date}
+                        value={
+                          selectedUnit.construction_end_date
+                            ? format(selectedUnit.construction_end_date, "PPP")
+                            : ""
+                        }
                         onFocus={() => setShowEndDatePicker(true)}
                       />
                       {showEndDatePicker && (
@@ -479,38 +503,40 @@ const ViewUnits = () => {
                         />
                       )}
 
-                      <TextInput
-                        className="border border-gray-300 p-2 mb-4 rounded"
-                        placeholder="Number of Floors"
-                        value={selectedUnit.construction_floors}
-                        onChangeText={(text) =>
-                          setSelectedUnit({
-                            ...selectedUnit,
-                            construction_floors: text,
-                          })
-                        }
-                      />
+                      <View className="border border-gray-300 rounded mb-2">
+                        <Picker
+                          selectedValue={selectedUnit?.construction_floors?.toString()}
+                          onValueChange={(itemValue) =>
+                            setSelectedUnit({
+                              ...selectedUnit,
+                              construction_floors: itemValue,
+                            })
+                          }
+                        >
+                          <Picker.Item label="Construction floors" value="" />
+                          <Picker.Item label="1" value="1" />
+                          <Picker.Item label="2" value="2" />
+                        </Picker>
+                      </View>
                     </>
                   )}
 
                   {selectedUnit.unit_type === "MISC_CONSTRUCTION" && (
                     <>
-                      <TextInput
-                        className="border border-gray-300 p-2 mb-4 rounded"
-                        placeholder="Additional Charge"
-                        value={selectedUnit.additional_charge}
-                        onChangeText={(text) =>
-                          setSelectedUnit({
-                            ...selectedUnit,
-                            additional_charge: text,
-                          })
-                        }
-                      />
-
+                      <Text className="text-sm text-gray-600 mb-2">
+                        Additional Charge start:
+                      </Text>
                       <TextInput
                         className="border border-gray-300 p-2 mb-4 rounded"
                         placeholder="Additional Charge Start Date"
-                        value={selectedUnit.additional_charge_start_date}
+                        value={
+                          selectedUnit.additional_charge_start_date
+                            ? format(
+                                selectedUnit.additional_charge_start_date,
+                                "PPP"
+                              )
+                            : ""
+                        }
                         onFocus={() => setShowAdditionalStartDatePicker(true)}
                       />
                       {showAdditionalStartDatePicker && (
@@ -536,11 +562,20 @@ const ViewUnits = () => {
                           }}
                         />
                       )}
-
+                      <Text className="text-sm text-gray-600 mb-2">
+                        Additonal Charge End:
+                      </Text>
                       <TextInput
                         className="border border-gray-300 p-2 mb-4 rounded"
                         placeholder="Additional Charge End Date"
-                        value={selectedUnit.additional_charge_end_date}
+                        value={
+                          selectedUnit.additional_charge_end_date
+                            ? format(
+                                selectedUnit.additional_charge_end_date,
+                                "PPP"
+                              )
+                            : ""
+                        }
                         onFocus={() => setShowAdditionalEndDatePicker(true)}
                       />
                       {showAdditionalEndDatePicker && (

@@ -368,8 +368,13 @@ const GenerateBill = () => {
               <TouchableOpacity
                 onPress={handleGenerateBill}
                 className="flex-1 bg-primary p-3 rounded-lg mr-2"
+                disabled={loading}
               >
-                <Text className="text-center text-white">Generate Bill</Text>
+                {loading ? (
+                  <ActivityIndicator size="small" color="#fff" />
+                ) : (
+                  <Text className="text-center text-white">Generate Bill</Text>
+                )}
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => setShowBillPreview(false)}
