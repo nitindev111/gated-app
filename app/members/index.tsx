@@ -420,6 +420,7 @@ const ViewUnits = () => {
                         }
                       >
                         <Picker.Item label="NORMAL" value="NORMAL" />
+                        <Picker.Item label="VACANT" value="VACANT" />
                         <Picker.Item
                           label="Under construction"
                           value="UNDER_CONSTRUCTION"
