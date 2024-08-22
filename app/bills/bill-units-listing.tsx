@@ -19,8 +19,10 @@ const UnitsList = () => {
   const params = useLocalSearchParams();
   const router = useRouter();
 
-  const handleOnClick = (id, unit_number) => {
-    router.push(`/bills/view-bill?bill_id=${id}&unit_number=${unit_number}`);
+  const handleOnClick = (id, unitInfo) => {
+    router.push(
+      `/bills/view-bill?bill_id=${id}&unit_number=${unitInfo?.unit_number}&unit_name=${unitInfo?.name}`
+    );
   };
 
   const fetchUnitBills = async (filter) => {
@@ -100,9 +102,7 @@ const UnitsList = () => {
             <TouchableOpacity
               key={index}
               className={`border border-gray-300 p-4 rounded-lg mb-4 bg-gray-50 shadow-sm flex-row items-start justify-between`}
-              onPress={() =>
-                handleOnClick(unit?.bill_id, unit.unit_info.unit_number)
-              }
+              onPress={() => handleOnClick(unit?.bill_id, unit.unit_info)}
             >
               <Text className="text-sm font-bold mb-2">
                 Unit {unit.unit_info.unit_number}

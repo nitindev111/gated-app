@@ -19,7 +19,7 @@ import FileUpload from "../components/common/FileUpload";
 
 const ViewBill = () => {
   const [loading, setLoading] = useState(false);
-  const { bill_id, unit_number } = useLocalSearchParams();
+  const { bill_id, unit_number, unit_name } = useLocalSearchParams();
   const [bill, setBill] = useState<any>(null);
   const [accounts, setAccounts] = useState([]);
   const [showBottomSheet, setShowBottomSheet] = useState(false);
@@ -76,7 +76,7 @@ const ViewBill = () => {
           <Text className="text-primary">Back</Text>
         </TouchableOpacity>
       ),
-      title: "  Unit: " + unit_number || "",
+      title: "",
     });
   }, [navigation, bill]);
 
@@ -245,7 +245,11 @@ const ViewBill = () => {
 
   return (
     <View className="flex-1 bg-white p-4">
-      <ScrollView className="flex-1">
+      <ScrollView className="flex-1 ">
+        <View className="mb-2 border-b border-gray-200 pb-2">
+          <Text className="font-bold text-xl">Unit {unit_number}</Text>
+          <Text className="text-sm mb-2 text-gray-600">{unit_name}</Text>
+        </View>
         {/* Bill Information Section */}
         <View className="mb-6 border-b border-gray-200 pb-4">
           <Text className="text-base font-bold mb-2">{bill?.bill_name}</Text>
@@ -268,6 +272,28 @@ const ViewBill = () => {
             </Text>
             <Text className="text-sm text-gray-800">
               {new Date(bill?.due_date).toLocaleDateString()}
+            </Text>
+          </View>
+        </View>
+        <View className="mb-6 flex flex-row justify-between">
+          <View className="flex-1 mr-4">
+            <Text className="text-sm text-gray-600 font-bold mb-1">
+              Invoice Date
+            </Text>
+            <Text className="text-sm text-gray-800">
+              {new Date(bill?.invoice_date).toLocaleDateString()}
+            </Text>
+          </View>
+          <View className="flex-1">
+            <Text className="text-sm text-gray-600 font-bold mb-1">
+              Payment Date
+            </Text>
+            <Text className="text-sm text-gray-800">
+              {bill?.payment_proof?.payment_date
+                ? new Date(
+                    bill?.payment_proof?.payment_date
+                  ).toLocaleDateString()
+                : "NA"}
             </Text>
           </View>
         </View>

@@ -31,7 +31,7 @@ function AppStack() {
         <Stack.Screen
           name="view-bill"
           options={{
-            headerShown: true,
+            headerShown: false,
           }}
         />
       </Stack>

@@ -16,7 +16,7 @@ import { Picker } from "@react-native-picker/picker";
 import { BACKEND_BASE_URL } from "@/config/config";
 
 const Transactions = () => {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [transactions, setTransactions] = useState([]);
   const [accounts, setAccounts] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -84,12 +84,15 @@ const Transactions = () => {
   };
 
   const fetchAccounts = async () => {
+    setLoading(true);
     const url = `${BACKEND_BASE_URL}/accounts/view?society_id=${societyId}`;
     try {
       const response = await axiosInstance.get(url);
       setAccounts(response.data);
     } catch (error) {
       console.error("Error fetching accounts:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
