@@ -34,10 +34,13 @@ const Login = () => {
 
   const isPhoneNumberValid = async (): Promise<boolean> => {
     try {
+      console.log("before validation the number");
+
       const response = await axiosInstance.get(
         BACKEND_BASE_URL +
           `/users/validate-phoneNumber?phoneNumber=${phoneNumber}`
       );
+      console.log("after validation the number");
       if (response.data) {
         return true;
       } else {
@@ -56,16 +59,20 @@ const Login = () => {
     setLoading(true);
     if (phoneNumber.length === 10 && (await isPhoneNumberValid())) {
       try {
+        console.log("before sending the otp");
         const response = await axiosInstance.post(BACKEND_BASE_URL + SEND_OTP, {
           phoneNumber,
           channel: "SMS",
           expiry: 60,
         });
+        console.log("before sending the otp", response);
         router.replace({
           pathname: `/verify`,
           params: { phoneNumber, orderId: response.data?.orderId },
         }); // Remove the braces in params
       } catch (error) {
+        console.log("inside the error");
+
         Alert.alert("Something went wrong");
       } finally {
         setLoading(false);

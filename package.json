@@ -20,6 +20,7 @@
     "@msg91comm/sendotp-react-native": "^1.0.0",
     "@react-native-async-storage/async-storage": "1.23.1",
     "@react-native-community/datetimepicker": "^8.2.0",
+    "@react-native-community/netinfo": "^11.3.2",
     "@react-native-picker/picker": "2.7.5",
     "@react-navigation/native": "^6.1.17",
     "@react-navigation/native-stack": "^6.10.0",
@@ -63,7 +64,8 @@
     "react-native-svg": "15.2.0",
     "react-native-vector-icons": "^10.1.0",
     "react-native-web": "~0.19.10",
-    "styled-components": "^6.1.11"
+    "styled-components": "^6.1.11",
+    "superagent": "^10.0.2"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

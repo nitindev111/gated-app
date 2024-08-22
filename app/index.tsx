@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
 import { Alert, BackHandler, Image, Pressable, Text, View } from "react-native";
 import {
   GestureHandlerRootView,
@@ -12,6 +12,7 @@ import images from "@/constants/images";
 import useAuthRedirect from "./hooks/useAuthRedirect";
 import { UserProvider } from "./context/UserProvider";
 import Button from "./components/common/Button";
+import axiosInstance from "./utils/axiosInstance";
 
 if (__DEV__) {
   require("../ReactotronConfig");
@@ -20,6 +21,20 @@ if (__DEV__) {
 const AppContent = () => {
   const theme = useTheme();
   useAuthRedirect();
+
+  useEffect(() => {
+    const prewarmConnection = async () => {
+      try {
+        // Replace with a lightweight endpoint
+        await axiosInstance.get("https://gateup.in/api/health?prewarm=tru");
+        console.log("Connection prewarmed");
+      } catch (error) {
+        console.log("Prewarm connection failed", error);
+      }
+    };
+
+    prewarmConnection();
+  }, []);
 
   useFocusEffect(
     useCallback(() => {
