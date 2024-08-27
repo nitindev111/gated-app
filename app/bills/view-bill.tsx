@@ -16,6 +16,7 @@ import DateTimePicker from "@react-native-community/datetimepicker"; // import D
 import { Picker } from "@react-native-picker/picker";
 import { useUser } from "../context/UserProvider";
 import FileUpload from "../components/common/FileUpload";
+import { format } from "date-fns";
 
 const ViewBill = () => {
   const [loading, setLoading] = useState(false);
@@ -25,6 +26,7 @@ const ViewBill = () => {
   const [showBottomSheet, setShowBottomSheet] = useState(false);
   const navigation = useNavigation();
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showEditbillDueDate, setShowEditbillDueDate] = useState(false);
   const [paymentDetails, setPaymentDetails] = useState({
     account_id: "",
     date: new Date(),
@@ -34,8 +36,24 @@ const ViewBill = () => {
     transaction_ref_number: "",
     attachment_urls: [""],
   });
+  const [showEditBottomSheet, setShowEditBottomSheet] = useState(false);
+  const [editDetails, setEditDetails] = useState({
+    amount: bill?.amount || "",
+    due_date: bill?.due_date || new Date(),
+    description: bill?.description || "",
+    reason_for_change: "",
+  });
 
   const { user } = useUser();
+
+  const perfillEditDetails = () => {
+    setEditDetails({
+      amount: bill?.amount || "",
+      due_date: new Date(bill?.due_date),
+      description: bill?.description || "",
+      reason_for_change: "",
+    });
+  };
 
   const fetchBill = async () => {
     setLoading(true);
@@ -93,6 +111,15 @@ const ViewBill = () => {
     return true;
   };
 
+  const validateEditForm = () => {
+    const { amount, due_date, description, reason_for_change } = editDetails;
+    if (!amount || !due_date || !description || !reason_for_change) {
+      Alert.alert("Validation Error", "Please fill the required fields.");
+      return false;
+    }
+    return true;
+  };
+
   const handleUploadSuccess = (url: string) => {
     const urls = [];
     urls.push(url);
@@ -129,6 +156,30 @@ const ViewBill = () => {
       setShowBottomSheet(false);
     } catch (error) {
       console.error("Failed to mark bill as paid:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleEditBill = async () => {
+    if (!validateEditForm) return;
+    setLoading(true);
+    try {
+      const url = `${BACKEND_BASE_URL}/bills/edit/${bill_id}`;
+
+      const data = {
+        bill_id: bill._id,
+        user_id: user._id, // Tracking who made the changes
+        ...editDetails,
+      };
+
+      const response = await axiosInstance.patch(url, data);
+      console.log("Response:", response.data);
+      Alert.alert("Bill Successfully Edited");
+      setShowEditBottomSheet(false);
+      await fetchBill(); // Refresh the bill data after editing
+    } catch (error) {
+      console.error("Failed to edit bill:", error);
     } finally {
       setLoading(false);
     }
@@ -225,6 +276,89 @@ const ViewBill = () => {
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => setShowBottomSheet(false)}
+              className="flex-1 bg-red-700 p-4 rounded-lg"
+            >
+              <Text className="text-white text-center">Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+    );
+  };
+
+  console.log("====================================");
+  console.log("bill", bill);
+  console.log("====================================");
+
+  const renderEditBillModal = () => {
+    console.log("edit", editDetails);
+
+    return (
+      <Modal
+        visible={showEditBottomSheet}
+        animationType="slide"
+        transparent={false}
+      >
+        <View className="flex-1 bg-white p-6 gap-2">
+          <Text className="text-lg font-bold mb-4">Edit Bill</Text>
+          <TextInput
+            inputMode="decimal"
+            placeholder="Amount"
+            value={editDetails.amount.toString()}
+            onChangeText={(text) =>
+              setEditDetails({ ...editDetails, amount: text })
+            }
+            keyboardType="numeric"
+            className="border-gray-300 border-solid border border-1 p-2 rounded-lg mb-4"
+          />
+          <TouchableOpacity
+            onPress={() => setShowEditbillDueDate(true)}
+            className="border-gray-300 border-solid border border-1 p-2 rounded-lg mb-4"
+          >
+            <Text>{format(editDetails.due_date, "PPP")}</Text>
+          </TouchableOpacity>
+          {showEditbillDueDate && (
+            <DateTimePicker
+              value={editDetails.due_date}
+              mode="date"
+              display="compact"
+              onChange={(event, selectedDate) => {
+                setShowEditbillDueDate(false);
+                if (selectedDate) {
+                  setEditDetails({ ...editDetails, due_date: selectedDate });
+                }
+              }}
+            />
+          )}
+
+          <TextInput
+            placeholder="Description"
+            value={editDetails.description}
+            onChangeText={(text) =>
+              setEditDetails({ ...editDetails, description: text })
+            }
+            className="border-gray-300 border-solid border border-1 p-2 rounded-lg mb-4"
+          />
+
+          {/* Reason for Change Input */}
+          <TextInput
+            placeholder="Reason for Change"
+            value={editDetails.reason_for_change}
+            onChangeText={(text) =>
+              setEditDetails({ ...editDetails, reason_for_change: text })
+            }
+            className="border-gray-300 border-solid border border-1 p-2 rounded-lg mb-4"
+          />
+
+          <View className="flex flex-row items-center gap-2">
+            <TouchableOpacity
+              onPress={handleEditBill}
+              className="flex-1 bg-primary p-4 rounded-lg"
+            >
+              <Text className="text-white text-center">Submit</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => setShowEditBottomSheet(false)}
               className="flex-1 bg-red-700 p-4 rounded-lg"
             >
               <Text className="text-white text-center">Cancel</Text>
@@ -362,20 +496,28 @@ const ViewBill = () => {
           </Text>
         </View>
       </ScrollView>
-
       {/* Action Button Section */}
       {(bill?.status !== "PAID" || bill.verification_status !== "APPROVED") && (
-        <View className="p-4 border-t border-gray-200 bg-white">
+        <View className="p-4 border-t border-gray-200 bg-white flex flex-row justify-between gap-2">
           <TouchableOpacity
             onPress={() => setShowBottomSheet(true)}
-            className="bg-primary p-3 rounded-lg"
+            className="bg-primary p-3 rounded-lg w-[50%]"
           >
             <Text className="text-white text-center text-sm">Mark as Paid</Text>
           </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              perfillEditDetails();
+              setShowEditBottomSheet(true);
+            }}
+            className="flex-1 bg-yellow-600 p-4 rounded-lg"
+          >
+            <Text className=" text-white text-center">Edit Bill</Text>
+          </TouchableOpacity>
         </View>
       )}
-
       {renderMarkAsPaidModal()}
+      {renderEditBillModal()}
     </View>
   );
 };
