@@ -103,8 +103,6 @@ const ViewUnits = () => {
     }
   };
 
-  console.log("selected unit", selectedUnit);
-
   const confirmDelete = (unitId) => {
     Alert.alert(
       "Confirm Delete",
@@ -214,7 +212,10 @@ const ViewUnits = () => {
           </Text>
           <Text className="text-sm  mb-2">Owner: {unit.name || "Unknown"}</Text>
           <Text className="text-sm text-gray-600 mb-2">
-            Unit Type: {unit.unit_type || "Unknown"}
+            Unit Type:{" "}
+            {unit.unit_type === "NORMAL" && unit.has_tenants
+              ? "NORMAL + TENANTS"
+              : unit.unit_type?.split("_").join(" ")}
           </Text>
           <View className="flex-row justify-between mt-2">
             <TouchableOpacity
