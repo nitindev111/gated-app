@@ -219,7 +219,7 @@ const AddExpense = ({ societyId = "668ec76634a193bb66e98ead" }) => {
             className="h-10"
           >
             <Picker.Item label="Select Account" value="" />
-            <Picker.Item value="CASH" label="Online (net banking, upi etc)" />
+            <Picker.Item value="ONLINE" label="Online (net banking, upi etc)" />
             <Picker.Item value="CASH" label="Cash" />
             <Picker.Item value="CHEQUE" label="Cheque" />
           </Picker>

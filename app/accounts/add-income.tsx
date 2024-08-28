@@ -235,7 +235,7 @@ const AddIncome = ({ societyId = "668ec76634a193bb66e98ead" }) => {
             }
           >
             <Picker.Item label="Select Payment Method" value="" />
-            <Picker.Item value="CASH" label="Online (net banking, upi etc)" />
+            <Picker.Item value="ONLINE" label="Online (net banking, upi etc)" />
             <Picker.Item value="CASH" label="Cash" />
             <Picker.Item value="CHEQUE" label="Cheque" />
           </Picker>
