@@ -18,9 +18,23 @@ import { useUser } from "../context/UserProvider";
 import FileUpload from "../components/common/FileUpload";
 import { format } from "date-fns";
 
+const getUnitTypeShade = (unit_type: string) => {
+  console.log("unit", unit_type);
+
+  if (unit_type === "UNDER_CONSTRUCTION") {
+    return "yellow";
+  }
+  if (unit_type === "MISC_CONSTRUCTION") {
+    return "red";
+  }
+  if (unit_type === "NORMAL") {
+    return "green";
+  }
+};
+
 const ViewBill = () => {
   const [loading, setLoading] = useState(false);
-  const { bill_id, unit_number, unit_name } = useLocalSearchParams();
+  const { bill_id, unit_number, unit_name, unit_type } = useLocalSearchParams();
   const [bill, setBill] = useState<any>(null);
   const [accounts, setAccounts] = useState([]);
   const [showBottomSheet, setShowBottomSheet] = useState(false);
@@ -382,7 +396,12 @@ const ViewBill = () => {
       <ScrollView className="flex-1 ">
         <View className="mb-2 border-b border-gray-200 pb-2">
           <Text className="font-bold text-xl">Unit {unit_number}</Text>
-          <Text className="text-sm mb-2 text-gray-600">{unit_name}</Text>
+          <Text className="text-sm text-gray-600">{unit_name}</Text>
+          <Text
+            className={`text-sm text-${getUnitTypeShade(unit_type)}-600 mb-2`}
+          >
+            {unit_type?.split("_").join(" ")}{" "}
+          </Text>
         </View>
         {/* Bill Information Section */}
         <View className="mb-6 border-b border-gray-200 pb-4">

@@ -20,9 +20,8 @@ const UnitsList = () => {
   const router = useRouter();
 
   const handleOnClick = (id, unitInfo) => {
-    router.push(
-      `/bills/view-bill?bill_id=${id}&unit_number=${unitInfo?.unit_number}&unit_name=${unitInfo?.name}`
-    );
+    const url = `/bills/view-bill?bill_id=${id}&unit_number=${unitInfo?.unit_number}&unit_name=${unitInfo?.name}&unit_type=${unitInfo.unit_type}`;
+    router.push(url);
   };
 
   const fetchUnitBills = async (filter) => {
