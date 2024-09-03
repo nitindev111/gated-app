@@ -65,7 +65,7 @@ const Login = () => {
           channel: "SMS",
           expiry: 60,
         });
-        console.log("before sending the otp", response);
+        console.log("before sending the otp", response.data);
         router.replace({
           pathname: `/verify`,
           params: { phoneNumber, orderId: response.data?.orderId },

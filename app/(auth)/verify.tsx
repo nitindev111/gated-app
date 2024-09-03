@@ -17,7 +17,7 @@ const Verify = () => {
   const storage = useAsyncStorage("gated_user");
   const { setUser, loading, user } = useUser();
   const { orderId, phoneNumber } = useLocalSearchParams();
-  const { uid, setUid } = useState(orderId);
+  const { uid, setUid } = useState();
   const [timer, setTimer] = useState(60);
   const [isTimerActive, setIsTimerActive] = useState(false);
 
@@ -27,13 +27,16 @@ const Verify = () => {
     {
       if (otp.length === 6) {
         try {
+          const payload = {
+            phoneNumber,
+            orderId,
+            otp,
+          };
+          console.log("payload", payload);
+
           const response = await axiosInstance.post(
             BACKEND_BASE_URL + VERIFY_OTP,
-            {
-              phoneNumber,
-              orderId: uid,
-              otp,
-            }
+            payload
           );
           const accessToken = response.data?.access_token;
           storage.setItem(accessToken, async () => {

@@ -10,6 +10,7 @@ npm-debug.*
 *.orig.*
 web-build/
 /dump
+gateup-native-app-fd3077836df2.json
 
 # macOS
 .DS_Store

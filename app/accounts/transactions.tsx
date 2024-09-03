@@ -14,6 +14,7 @@ import { RUPEE_SYMBOL } from "@/constants/others";
 import { useUser } from "../context/UserProvider";
 import { Picker } from "@react-native-picker/picker";
 import { BACKEND_BASE_URL } from "@/config/config";
+import Pagination from "@cherry-soft/react-native-basic-pagination";
 
 const Transactions = () => {
   const [loading, setLoading] = useState(true);
@@ -21,6 +22,8 @@ const Transactions = () => {
   const [accounts, setAccounts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [totalCount, setTotalCount] = useState(0);
+  const [limit, setLimit] = useState(15);
+  const [page, setPage] = useState(1);
 
   const [filters, setFilters] = useState({
     accountId: "",
@@ -56,12 +59,15 @@ const Transactions = () => {
 
   const fetchTransactions = async (filterParams = {}) => {
     setLoading(true);
+    const offset = filterParams?.offset || limit * (page - 1);
     try {
-      const url = `${BACKEND_BASE_URL}/transactions/fetchAll`;
-      const response = await axiosInstance.get(url, { params: filterParams });
-      const fetchedTransactions = response.data;
-      setTransactions(fetchedTransactions);
-      setTotalCount(fetchedTransactions.length); // Set total count based on length
+      const url = `${BACKEND_BASE_URL}/transactions/v2/fetchAll`;
+      const response = await axiosInstance.get(url, {
+        params: { ...filterParams, limit, offset },
+      });
+      const { transactions, total } = response.data;
+      setTransactions(transactions);
+      setTotalCount(total); // Set total count based on length
     } catch (error) {
       console.error("Error fetching transactions:", error);
     } finally {
@@ -126,10 +132,9 @@ const Transactions = () => {
     if (filters.sub_category) {
       filterParams.sub_category = filters.sub_category;
     }
-    console.log("filter", filterParams);
-
-    fetchTransactions(filterParams);
+    fetchTransactions({ ...filterParams, page: 1, offset: 0 });
     setShowFiltersModal(false);
+    setPage(1);
   };
 
   const handleClearFilters = () => {
@@ -139,8 +144,9 @@ const Transactions = () => {
       createdAtTo: null,
       type: "",
     });
-    fetchTransactions();
+    fetchTransactions({ page: 1 });
     setShowFiltersModal(false);
+    setPage(1);
   };
 
   const handleClearIndividualFilter = (filterKey) => {
@@ -149,6 +155,14 @@ const Transactions = () => {
       [filterKey]: filterKey.includes("Date") ? null : "",
     }));
     handleApplyFilters();
+  };
+
+  const handlePageChange = (page: number) => {
+    console.log("page", page);
+    const offset = (page - 1) * limit;
+    setPage(page);
+    // setOffset(offset);
+    fetchTransactions({ limit, offset });
   };
 
   const renderTransactionCard = (transaction: any) => (
@@ -312,15 +326,15 @@ const Transactions = () => {
     );
   }
 
-  // if (transactions.length === 0) {
-  //   return (
-  //     <View className="flex-1 justify-center items-center p-6 bg-white">
-  //       <Text className="text-lg text-gray-600">
-  //         No Transactions to display
-  //       </Text>
-  //     </View>
-  //   );
-  // }
+  if (transactions.length === 0) {
+    return (
+      <View className="flex-1 justify-center items-center p-6 bg-white">
+        <Text className="text-lg text-gray-600">
+          No Transactions to display
+        </Text>
+      </View>
+    );
+  }
 
   return (
     <View className="flex-1 bg-gray-100">
@@ -346,6 +360,15 @@ const Transactions = () => {
       <ScrollView className="p-4">
         {transactions.map((transaction) => renderTransactionCard(transaction))}
       </ScrollView>
+      <Pagination
+        totalItems={totalCount}
+        pageSize={limit}
+        currentPage={page}
+        onPageChange={handlePageChange}
+        btnStyle={{ backgroundColor: "#6575A8" }}
+        activeBtnStyle={{ backgroundColor: "#E3C4E5" }}
+        pagesToDisplay={2}
+      />
 
       {/* Filters Modal */}
       <Modal
