@@ -22,11 +22,6 @@
     "preview4": {
       "distribution": "internal"
     },
-    "production": {
-      "android": {
-        "serviceAccountKeyPath": "../path/to/api-xxx-yyy-zzz.json",
-        "track": "internal"
-      }
-    }
+    "production": {}
   }
 }
