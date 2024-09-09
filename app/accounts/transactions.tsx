@@ -108,7 +108,7 @@ const Transactions = () => {
     fetchCategories();
   }, []);
 
-  const handleApplyFilters = () => {
+  const getFilterParams = () => {
     const filterParams = {};
 
     if (filters.accountId) {
@@ -132,6 +132,12 @@ const Transactions = () => {
     if (filters.sub_category) {
       filterParams.sub_category = filters.sub_category;
     }
+
+    return filterParams;
+  };
+
+  const handleApplyFilters = () => {
+    const filterParams = getFilterParams();
     fetchTransactions({ ...filterParams, page: 1, offset: 0 });
     setShowFiltersModal(false);
     setPage(1);
@@ -144,17 +150,9 @@ const Transactions = () => {
       createdAtTo: null,
       type: "",
     });
-    fetchTransactions({ page: 1 });
+    fetchTransactions({ page: 1, offset: 0 });
     setShowFiltersModal(false);
     setPage(1);
-  };
-
-  const handleClearIndividualFilter = (filterKey) => {
-    setFilters((prevFilters) => ({
-      ...prevFilters,
-      [filterKey]: filterKey.includes("Date") ? null : "",
-    }));
-    handleApplyFilters();
   };
 
   const handlePageChange = (page: number) => {
@@ -162,7 +160,8 @@ const Transactions = () => {
     const offset = (page - 1) * limit;
     setPage(page);
     // setOffset(offset);
-    fetchTransactions({ limit, offset });
+    const filters = getFilterParams();
+    fetchTransactions({ ...filters, limit, offset });
   };
 
   const renderTransactionCard = (transaction: any) => (
@@ -253,10 +252,16 @@ const Transactions = () => {
     </View>
   );
 
-  const renderAppliedFilters = () => {
+  const getAppliedFilters = () => {
     const appliedFilters = Object.keys(filters).filter(
       (key) => filters[key] && filters[key] !== ""
     );
+
+    return appliedFilters;
+  };
+
+  const renderAppliedFilters = () => {
+    const appliedFilters = getAppliedFilters();
 
     if (appliedFilters.length === 0) {
       return null;
@@ -298,12 +303,6 @@ const Transactions = () => {
                       : key
                   }: ${displayValue}`}
                 </Text>
-                <TouchableOpacity
-                  onPress={() => handleClearIndividualFilter(key)}
-                  className="ml-2"
-                >
-                  <Text className="text-red-500 font-bold">×</Text>
-                </TouchableOpacity>
               </View>
             );
           })}
@@ -332,6 +331,14 @@ const Transactions = () => {
         <Text className="text-lg text-gray-600">
           No Transactions to display
         </Text>
+        {getAppliedFilters().length > 0 && (
+          <TouchableOpacity
+            onPress={handleClearFilters}
+            className="bg-secondary p-2 rounded w-full mt-2"
+          >
+            <Text className="text-white text-center">Clear All Filters</Text>
+          </TouchableOpacity>
+        )}
       </View>
     );
   }
