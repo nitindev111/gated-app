@@ -5,6 +5,7 @@ import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
+  Keyboard,
   ScrollView,
   Text,
   TextInput,
@@ -14,6 +15,7 @@ import {
 import axiosInstance from "../utils/axiosInstance";
 import FileUpload from "../components/common/FileUpload";
 import { useRouter } from "expo-router";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 const AddIncome = ({ societyId = "668ec76634a193bb66e98ead" }) => {
   const router = useRouter();
@@ -35,6 +37,10 @@ const AddIncome = ({ societyId = "668ec76634a193bb66e98ead" }) => {
     transaction_ref_number: "",
   });
   const [showDatePicker, setShowDatePicker] = useState(false);
+
+  const dismissKeyboard = () => {
+    Keyboard.dismiss();
+  };
 
   useEffect(() => {
     const fetchAccounts = async () => {
@@ -162,8 +168,9 @@ const AddIncome = ({ societyId = "668ec76634a193bb66e98ead" }) => {
 
   return (
     <View className="flex-1 bg-white">
-      <ScrollView
-        contentContainerStyle={{ paddingBottom: 100 }}
+      <KeyboardAwareScrollView
+        contentContainerStyle={{ flexGrow: 1, paddingBottom: 100 }}
+        extraScrollHeight={20}
         className="p-6"
       >
         <Text className="text-lg font-bold mb-4 text-center">
@@ -174,6 +181,7 @@ const AddIncome = ({ societyId = "668ec76634a193bb66e98ead" }) => {
           <Picker
             selectedValue={form.category}
             onValueChange={(value) => handleInputChange("category", value)}
+            onFocus={dismissKeyboard}
           >
             <Picker.Item label="Select Category" value="" />
             {categories.map((category, index) => (
@@ -195,6 +203,7 @@ const AddIncome = ({ societyId = "668ec76634a193bb66e98ead" }) => {
                 onValueChange={(value) =>
                   handleInputChange("sub_category", value)
                 }
+                onFocus={dismissKeyboard}
               >
                 <Picker.Item label="Select Sub Category" value="" />
                 {subCategories.map((subCategory, index) => (
@@ -214,6 +223,7 @@ const AddIncome = ({ societyId = "668ec76634a193bb66e98ead" }) => {
           <Picker
             selectedValue={form.account_id}
             onValueChange={(value) => handleInputChange("account_id", value)}
+            onFocus={dismissKeyboard}
           >
             <Picker.Item label="Select Account" value="" />
             {accounts.map((account: any) => (
@@ -233,6 +243,7 @@ const AddIncome = ({ societyId = "668ec76634a193bb66e98ead" }) => {
             onValueChange={(value) =>
               handleInputChange("payment_method", value)
             }
+            onFocus={dismissKeyboard}
           >
             <Picker.Item label="Select Payment Method" value="" />
             <Picker.Item value="ONLINE" label="Online (net banking, upi etc)" />
@@ -256,6 +267,9 @@ const AddIncome = ({ societyId = "668ec76634a193bb66e98ead" }) => {
         >
           <Text>{form.date.toDateString()}</Text>
         </TouchableOpacity>
+        <Text className="text-sm font-semibold mb-2">
+          Transaction Ref Number (Optional)
+        </Text>
         <TextInput
           value={form.transaction_ref_number}
           onChangeText={(text) =>
@@ -288,13 +302,20 @@ const AddIncome = ({ societyId = "668ec76634a193bb66e98ead" }) => {
             }}
           />
         )}
-      </ScrollView>
-      <TouchableOpacity
-        onPress={handleSubmit}
-        className="bg-primary p-4 rounded-lg absolute bottom-0 left-0 right-0"
-      >
-        <Text className="text-white text-center font-bold">Submit</Text>
-      </TouchableOpacity>
+      </KeyboardAwareScrollView>
+      <View className="sticky bottom-0 left-0 right-0">
+        <TouchableOpacity
+          onPress={handleSubmit}
+          className="bg-primary p-4 rounded-lg"
+          disabled={loading}
+        >
+          {loading ? (
+            <ActivityIndicator size={"small"} />
+          ) : (
+            <Text className="text-white text-center font-bold">Submit</Text>
+          )}
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
